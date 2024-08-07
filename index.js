@@ -405,21 +405,20 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
   
   async function handleLightMorse(interaction, morseCode) {
-      try {
-          await interaction.deferReply();
-          const gifBuffer = await createMorseGif(morseCode);
-          if (!gifBuffer) {
-              await interaction.editReply('Error generating GIF. Please try again.');
-              return;
-          }
-          const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
-          await sendWebhookMessage(interaction.channel, { files: [attachment] });
-          await interaction.editReply('Light Morse code has been sent!');
-      } catch (error) {
-          console.error('Error handling Light Morse:', error);
-          await interaction.editReply('An error occurred while processing your request.');
-      }
-  }
+    try {
+        await interaction.deferReply();
+        const gifBuffer = await createMorseGif(morseCode);
+        if (!gifBuffer) {
+            await interaction.editReply('Error generating GIF. Please try again.');
+            return;
+        }
+        const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
+        await interaction.editReply({ content: 'Light Morse code:', files: [attachment] });
+    } catch (error) {
+        console.error('Error handling Light Morse:', error);
+        await interaction.editReply('An error occurred while processing your request. Error: ' + error.message);
+    }
+}
   
   async function createMorseGif(morseCode) {
       const width = 100; // Reduced size
@@ -462,20 +461,20 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
   
   async function handleSoundMorse(interaction, morseCode) {
-      try {
-          await interaction.deferReply();
-          const audioBuffer = await createMorseAudio(morseCode);
-          if (!audioBuffer) {
-              await interaction.editReply('Error generating audio file. Please try again.');
-              return;
-          }
-          const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
-          await sendWebhookMessage(interaction.channel, { files: [attachment] });
-          await interaction.editReply('Sound Morse code has been sent!');
-      } catch (error) {
-          console.error('Error handling Sound Morse:', error);
-          await interaction.editReply('An error occurred while processing your request.');
-      }
+    try {
+        await interaction.deferReply();
+        const audioBuffer = await createMorseAudio(morseCode);
+        if (!audioBuffer) {
+            await interaction.editReply('Error generating audio file. Please try again.');
+            return;
+        }
+        const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
+        await interaction.editReply({ content: 'Sound Morse code:', files: [attachment] });
+    } catch (error) {
+        console.error('Error handling Sound Morse:', error);
+        await interaction.editReply('An error occurred while processing your request. Error: ' + error.message);
+    }
+}
   }
   
   async function createMorseAudio(morseCode) {
