@@ -378,34 +378,6 @@ if (typeof globalThis.ReadableStream === 'undefined') {
       return morse.split(' ').map(code => morseCode[code] || ' ').join('');
   }
   
-  const { WebhookClient } = require('discord.js');
-  
-  const webhooks = new Map();
-  
-  async function getOrCreateWebhook(channel) {
-      if (webhooks.has(channel.id)) {
-          return webhooks.get(channel.id);
-      }
-  
-      const existingWebhooks = await channel.fetchWebhooks();
-      let webhook = existingWebhooks.find(wh => wh.name === client.user.username);
-  
-      if (!webhook) {
-          webhook = await channel.createWebhook({
-              name: client.user.username,
-              avatar: client.user.displayAvatarURL()
-          });
-      }
-  
-      webhooks.set(channel.id, webhook);
-      return webhook;
-  }
-  
-  async function sendWebhookMessage(channel, content) {
-      const webhook = await getOrCreateWebhook(channel);
-      return webhook.send(content);
-  }
-  
   async function handleLightMorse(interaction, morseCode) {
       try {
           await interaction.deferReply();
