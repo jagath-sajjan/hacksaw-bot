@@ -475,7 +475,6 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         await interaction.editReply('An error occurred while processing your request. Error: ' + error.message);
     }
 }
-  }
   
   async function createMorseAudio(morseCode) {
       const dotLength = 50; // Shorter dot length
