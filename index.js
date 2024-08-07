@@ -532,16 +532,15 @@ if (typeof globalThis.ReadableStream === 'undefined') {
       return Buffer.concat([wavHeader, buffer]);
   }
   
-  const app = express();
-  const port = process.env.PORT || 8080;
-  
-  // Increase the timeout to 5 minutes (300000 ms)
-  app.use((req, res, next) => {
-    res.setTimeout(300000, () => {
-      console.log('Request has timed out.');
-      res.send(408);
-    });
-    next();
-  });
+  const app = express()
+  const port = process.env.PORT || 4000;
+
+  app.get('/', (req, res) => {
+  res.send('Morse Code Online')
+ })
+
+  app.listen(port, () => {
+  console.log(`morse app listening on port ${port}`)
+ })
   
   client.login(process.env.DISCORD_BOT_TOKEN);  
