@@ -6,105 +6,74 @@
     <title>Morse Bot | Best Morse Bot On Discord</title>
     <style>
         body {
-            background-color: #2e2e2e;
-            color: #e0e0e0;
             font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
             margin: 0;
             padding: 0;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #2e2e2e;
+        }
+        header img {
+            border-radius: 50%;
+            border: 5px solid #4caf50;
+            width: 120px;
+            height: 120px;
+        }
+        h1 {
+            margin-top: 10px;
+            color: #b39ddb;
+        }
+        .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            width: 100%;
             padding: 20px;
-            background-color: #333;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .header img {
-            border-radius: 50%;
-            border: 5px solid #00ff00;
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-        }
-        .header h1 {
-            margin-left: 20px;
-            font-size: 2em;
         }
         .card {
-            background-color: #444;
-            border-radius: 10px;
+            background: #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            margin: 20px;
             padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            text-align: left;
+            width: 300px;
+            text-align: center;
         }
         .card h2 {
             margin-top: 0;
-            font-size: 1.5em;
-            color: #ff6f61;
+            color: #b39ddb;
         }
         .card p {
-            margin: 10px 0;
-            font-size: 1.2em;
+            color: #e0e0e0;
         }
-        .card a {
-            color: #00bfff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .card a:hover {
-            text-decoration: underline;
-        }
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-        .buttons a {
-            background-color: #6c5ce7;
+        .button {
+            display: inline-block;
+            background-color: #7289da;
             color: #fff;
             padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s;
+            font-size: 16px;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
-        .buttons a:hover {
-            background-color: #5a4fcf;
-        }
-        .banner img {
-            width: 100%;
-            border-radius: 10px;
+        .button:hover {
+            background-color: #5a6d9a;
         }
     </style>
 </head>
 <body>
+    <header>
+        <img src="https://i.ibb.co/kQd588T/image.png" alt="Bot Profile Picture">
+        <h1>Morse Bot</h1>
+    </header>
     <div class="container">
-        <div class="header">
-            <img src="https://i.ibb.co/kQd588T/image.png" alt="Bot Profile Picture">
-            <h1>My Discord Bot</h1>
-        </div>
-        <div class="banner">
-            <img src="https://i.ibb.co/vYZB9D2/welcome-little-one-2.png" alt="Banner">
-        </div>
         <div class="card">
-            <h2>Bot Information</h2>
-            <p>It's a Slash Command Bot coded in Node.js and Docker.</p>
+            <h2>Bot Info</h2>
+            <p>It's a Slash Command Bot Coded in Node.js and Docker.</p>
             <p>Command List:</p>
             <ul>
                 <li>/help</li>
@@ -115,13 +84,11 @@
                 <li>/morse</li>
                 <li>/demorse</li>
             </ul>
-            <p>And in /morse, there are 3 buttons: Copy Morse, Light Morse, and Sound Morse. Isn't it cool? So add it to your server and look cool. Hehe. Thanks for the support!</p>
+            <p>In /morse there are 3 buttons: Copy Morse, Light Morse, and Sound Morse. Isn't it cool? So add it to your server and look cool. Hehe, thanks for the support.</p>
         </div>
-        <div class="buttons">
-            <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758119092813777&redirect_uri=https%3A%2F%2Fdiscord.com%2Foauth2%2Fauthorize%3Fclient_id%3D1270040432427925677%26permissions%3D1758119092813777%26integration_type%3D0%26scope%3Dbot%2Bapplications.commands&integration_type=0&scope=bot+applications.commands" target="_blank">Invite Bot</a>
-            <a href="https://github.com/jagath-sajjan" target="_blank">Bot Creator</a>
-            <a href="https://youtube.com/@nobooklad" target="_blank">YouTube</a>
-        </div>
+        <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758119092813777&redirect_uri=https%3A%2F%2Fdiscord.com%2Foauth2%2Fauthorize%3Fclient_id%3D1270040432427925677%26permissions%3D1758119092813777%26integration_type%3D0%26scope%3Dbot%2Bapplications.commands&integration_type=0&scope=bot+applications.commands" class="button" target="_blank">Invite Bot</a>
+        <a href="https://github.com/jagath-sajjan" class="button" target="_blank">Bot Creator</a>
+        <a href="https://youtube.com/@nobooklad" class="button" target="_blank">YouTube</a>
     </div>
 </body>
 </html>
