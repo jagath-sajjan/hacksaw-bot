@@ -14,6 +14,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   const https = require('https');
   const { WebhookClient } = require('discord.js');
   const webhooks = new Map();
+  const path = require('path');
   
   async function getOrCreateWebhook(channel) {
       if (webhooks.has(channel.id)) {
@@ -573,15 +574,17 @@ async function handleSoundMorse(interaction, morseCode) {
       return Buffer.concat([wavHeader, buffer]);
   }
   
-  const app = express()
+  const app = express();
   const port = process.env.PORT || 8080;
 
-  app.get('/', (req, res) => {
-  res.send('Morse Is Online')
- })
+  app.use(express.static(path.join(__dirname)));
 
-  app.listen(port, () => {
-  console.log(`Morse app listening on port ${port}`)
- })
+  app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+ });
+
+   app.listen(port, () => {
+  console.log(`Morse app listening on port ${port}`);
+ });
   
-  client.login(process.env.DISCORD_BOT_TOKEN);  
+  client.login(process.env.DISCORD_BOT_TOKEN);
