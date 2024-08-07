@@ -12,9 +12,35 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   const express = require('express');
   const footerText = 'Made By Jagath🩵';
   const https = require('https');
+  const { WebhookClient } = require('discord.js');
+  const webhooks = new Map();
+  
+  async function getOrCreateWebhook(channel) {
+      if (webhooks.has(channel.id)) {
+          return webhooks.get(channel.id);
+      }
+  
+      const existingWebhooks = await channel.fetchWebhooks();
+      let webhook = existingWebhooks.find(wh => wh.name === client.user.username);
+  
+      if (!webhook) {
+          webhook = await channel.createWebhook({
+              name: client.user.username,
+              avatar: client.user.displayAvatarURL()
+          });
+      }
+  
+      webhooks.set(channel.id, webhook);
+      return webhook;
+  }
+  
+  async function sendWebhookMessage(channel, content) {
+      const webhook = await getOrCreateWebhook(channel);
+      return webhook.send(content);
+  }
   
   function pingServer() {
-    https.get('https://morse-5lqf.onrender.com', (resp) => {
+    https.get('https://morse-w4z7.onrender.com', (resp) => {
       console.log('Ping successful');
     }).on('error', (err) => {
       console.log('Ping failed: ' + err.message);
@@ -507,6 +533,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
   
   const app = express();
+  const port = process.env.PORT || 8080;
   
   // Increase the timeout to 5 minutes (300000 ms)
   app.use((req, res, next) => {
