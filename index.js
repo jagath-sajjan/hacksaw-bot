@@ -213,46 +213,73 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
   
   client.on('interactionCreate', async interaction => {
-      if (!interaction.isCommand()) return;
-  
-      const command = interaction.commandName;
-  
-      if (command === 'ping') {
-          await handlePing(interaction);
-      } else if (command === 'help') {
-          const embed = new EmbedBuilder()
-              .setTitle('Available Commands')
-              .addFields(
-                  { name: '/ping', value: 'Show bot latency', inline: true },
-                  { name: '/help', value: 'Show all available commands', inline: true },
-                  { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
-                  { name: '/morse [text]', value: 'Convert text to Morse code', inline: false },
-                  { name: '/demorse [morse]', value: 'Convert Morse code to text', inline: false },
-                  { name: '/learn', value: 'Show Morse code for alphabets, numbers, and symbols', inline: false },
-                  { name: '/coin-flip', value: 'Flip a coin', inline: false },
-                  { name: '/roll [sides]', value: 'Roll a die', inline: false }
-              )
-              .setColor('Green')
-              .setFooter({ text: footerText });
-          await interaction.reply({ embeds: [embed] });
-      } else if (command === 'qr') {
-          const type = interaction.options.getString('type');
-          const content = interaction.options.getString('content');
-          await handleQR(interaction, type, content);
-      } else if (command === 'morse') {
-          const text = interaction.options.getString('text');
-          await handleMorse(interaction, text);
-      } else if (command === 'demorse') {
-          const morse = interaction.options.getString('morse');
-          await handleDemorse(interaction, morse);
-      } else if (command === 'learn') {
-          await handleLearn(interaction);
-      } else if (command === 'coin-flip') {
-          await handleCoinFlip(interaction);
-      } else if (command === 'roll') {
-          await handleRoll(interaction);
-      }
-  });
+    if (!interaction.isCommand() && !interaction.isButton()) return;
+
+    if (interaction.isCommand()) {
+        const command = interaction.commandName;
+
+        if (command === 'ping') {
+            await handlePing(interaction);
+        } else if (command === 'help') {
+            const embed = new EmbedBuilder()
+                .setTitle('Available Commands')
+                .addFields(
+                    { name: '/ping', value: 'Show bot latency', inline: true },
+                    { name: '/help', value: 'Show all available commands', inline: true },
+                    { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
+                    { name: '/morse [text]', value: 'Convert text to Morse code', inline: false },
+                    { name: '/demorse [morse]', value: 'Convert Morse code to text', inline: false },
+                    { name: '/learn', value: 'Show Morse code for alphabets, numbers, and symbols', inline: false },
+                    { name: '/coin-flip', value: 'Flip a coin', inline: false },
+                    { name: '/roll [sides]', value: 'Roll a die', inline: false }
+                )
+                .setColor('Green')
+                .setFooter({ text: footerText });
+            await interaction.reply({ embeds: [embed] });
+        } else if (command === 'qr') {
+            const type = interaction.options.getString('type');
+            const content = interaction.options.getString('content');
+            await handleQR(interaction, type, content);
+        } else if (command === 'morse') {
+            const text = interaction.options.getString('text');
+            await handleMorse(interaction, text);
+        } else if (command === 'demorse') {
+            const morse = interaction.options.getString('morse');
+            await handleDemorse(interaction, morse);
+        } else if (command === 'learn') {
+            await handleLearn(interaction);
+        } else if (command === 'coin-flip') {
+            await handleCoinFlip(interaction);
+        } else if (command === 'roll') {
+            await handleRoll(interaction);
+        }
+    } else if (interaction.isButton()) {
+        // Handle button interactions
+        if (interaction.customId === 'copy_morse') {
+            const message = await interaction.message.fetch();
+            const morseCode = message.embeds[0].fields.find(field => field.name === 'Morse Code').value;
+            await interaction.reply({ content: `Copied Morse Code: \`${morseCode}\``, ephemeral: true });
+        } else if (interaction.customId === 'lightMorse') {
+            const message = await interaction.message.fetch();
+            const morseCode = message.embeds[0].fields.find(field => field.name === 'Morse Code').value;
+            await handleLightMorse(interaction, morseCode);
+
+            // Disable the button after clicking
+            const row = message.components[0];
+            row.components[1].setDisabled(true);
+            await interaction.update({ components: [row] });
+        } else if (interaction.customId === 'soundMorse') {
+            const message = await interaction.message.fetch();
+            const morseCode = message.embeds[0].fields.find(field => field.name === 'Morse Code').value;
+            await handleSoundMorse(interaction, morseCode);
+
+            // Disable the button after clicking
+            const row = message.components[0];
+            row.components[2].setDisabled(true);
+            await interaction.update({ components: [row] });
+        }
+    }
+});
   
   async function handleCoinFlip(interaction) {
       const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
@@ -270,52 +297,60 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
   
   async function handleMorse(interaction, text) {
-      const morseCode = textToMorse(text);
-      
-      const embed = new EmbedBuilder()
-          .setTitle('Text to Morse Code Conversion')
-          .addFields(
-              { name: 'Original Text', value: text },
-              { name: 'Morse Code', value: morseCode }
-          )
-          .setColor('Blue')
-          .setFooter({ text: footerText });
-  
-      const row = new ActionRowBuilder()
-          .addComponents(
-              new ButtonBuilder()
-                  .setCustomId('copy_morse')
-                  .setLabel('Copy Morse Code')
-                  .setStyle(ButtonStyle.Primary),
-              new ButtonBuilder()
-                  .setCustomId('light')
-                  .setLabel('Light Morse')
-                  .setStyle(ButtonStyle.Primary),
-              new ButtonBuilder()
-                  .setCustomId('sound')
-                  .setLabel('Sound Morse')
-                  .setStyle(ButtonStyle.Primary)
-          );
-  
-      const reply = await interaction.reply({ embeds: [embed], components: [row] });
-  
-      const filter = i => i.user.id === interaction.user.id;
-      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
-  
-      collector.on('collect', async i => {
-          if (i.customId === 'copy_morse') {
-              await i.reply({ content: `Copied Morse Code: \`${morseCode}\``, ephemeral: true });
-          } else if (i.customId === 'light') {
-              await handleLightMorse(i, morseCode);
-          } else if (i.customId === 'sound') {
-              await handleSoundMorse(i, morseCode);
-          }
-      });
-  
-      collector.on('end', async () => {
-          await reply.edit({ components: [] });
-      });
-  }
+    const morseCode = textToMorse(text);
+
+    const embed = new EmbedBuilder()
+        .setTitle('Text to Morse Code Conversion')
+        .addFields(
+            { name: 'Original Text', value: text },
+            { name: 'Morse Code', value: morseCode }
+        )
+        .setColor('Blue')
+        .setFooter({ text: footerText });
+
+    const row = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setCustomId('copy_morse')
+                .setLabel('Copy Morse Code')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId('lightMorse')
+                .setLabel('Light Morse')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId('soundMorse')
+                .setLabel('Sound Morse')
+                .setStyle(ButtonStyle.Primary)
+        );
+
+    const reply = await interaction.reply({ embeds: [embed], components: [row] });
+
+    const filter = i => i.user.id === interaction.user.id;
+    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+
+    collector.on('collect', async i => {
+        if (i.customId === 'copy_morse') {
+            await i.reply({ content: `Copied Morse Code: \`${morseCode}\``, ephemeral: true });
+        } else if (i.customId === 'lightMorse') {
+            await handleLightMorse(i, morseCode);
+
+            // Disable the button after clicking
+            row.components[1].setDisabled(true);
+            await reply.edit({ components: [row] });
+        } else if (i.customId === 'soundMorse') {
+            await handleSoundMorse(i, morseCode);
+
+            // Disable the button after clicking
+            row.components[2].setDisabled(true);
+            await reply.edit({ components: [row] });
+        }
+    });
+
+    collector.on('end', async () => {
+        await reply.edit({ components: [] });
+    });
+}
   
   async function handleLearn(interaction) {
       const morseCodeMap = {
