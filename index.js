@@ -429,9 +429,8 @@ async function createMorseGif(morseCode) {
     
     return new Promise((resolve, reject) => {
         const buffers = [];
-        encoder.on('data', buffer => buffers.push(buffer));
-        encoder.on('end', () => resolve(Buffer.concat(buffers)));
-        
+        encoder.createReadStream().on('data', buffer => buffers.push(buffer)).on('end', () => resolve(Buffer.concat(buffers)));
+
         encoder.start();
         encoder.setRepeat(0);
         encoder.setDelay(200);
