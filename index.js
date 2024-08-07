@@ -540,11 +540,11 @@ async function handleSoundMorse(interaction, morseCode) {
   const port = process.env.PORT || 4000;
 
   app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Morse Is Online')
  })
 
   app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Morse app listening on port ${port}`)
  })
   
   client.login(process.env.DISCORD_BOT_TOKEN);  
