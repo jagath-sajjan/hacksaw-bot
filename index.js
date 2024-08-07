@@ -14,7 +14,6 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   const https = require('https');
   const { WebhookClient } = require('discord.js');
   const webhooks = new Map();
-  const { Readable } = require('stream');
   
   async function getOrCreateWebhook(channel) {
       if (webhooks.has(channel.id)) {
