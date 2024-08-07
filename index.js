@@ -14,6 +14,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   const https = require('https');
   const { WebhookClient } = require('discord.js');
   const webhooks = new Map();
+  const { Readable } = require('stream');
   
   async function getOrCreateWebhook(channel) {
       if (webhooks.has(channel.id)) {
@@ -419,48 +420,53 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         await interaction.editReply('An error occurred while processing your request. Error: ' + error.message);
     }
 }
-  
-  async function createMorseGif(morseCode) {
-      const width = 100; // Reduced size
-      const height = 100;
-      const encoder = new GIFEncoder(width, height);
-      const canvas = createCanvas(width, height);
-      const ctx = canvas.getContext('2d');
-      
-      encoder.start();
-      encoder.setRepeat(0);
-      encoder.setDelay(200); // Faster frames
-      encoder.setQuality(10);
-  
-      const frames = morseCode.split('').flatMap(char => {
-          if (char === '.' || char === '-') {
-              return [
-                  () => {
-                      ctx.fillStyle = 'white';
-                      ctx.fillRect(0, 0, width, height);
-                  },
-                  () => {
-                      ctx.fillStyle = 'black';
-                      ctx.fillRect(0, 0, width, height);
-                  }
-              ];
-          }
-          return [() => {
-              ctx.fillStyle = 'black';
-              ctx.fillRect(0, 0, width, height);
-          }];
-      });
-  
-      frames.forEach(frame => {
-          frame();
-          encoder.addFrame(ctx);
-      });
-  
-      encoder.finish();
-      return encoder.out.getData();
-  }
-  
-  async function handleSoundMorse(interaction, morseCode) {
+
+async function createMorseGif(morseCode) {
+    const width = 100;
+    const height = 100;
+    const encoder = new GIFEncoder(width, height);
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+    
+    return new Promise((resolve, reject) => {
+        const buffers = [];
+        encoder.on('data', buffer => buffers.push(buffer));
+        encoder.on('end', () => resolve(Buffer.concat(buffers)));
+        
+        encoder.start();
+        encoder.setRepeat(0);
+        encoder.setDelay(200);
+        encoder.setQuality(10);
+
+        const frames = morseCode.split('').flatMap(char => {
+            if (char === '.' || char === '-') {
+                return [
+                    () => {
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, width, height);
+                    },
+                    () => {
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(0, 0, width, height);
+                    }
+                ];
+            }
+            return [() => {
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, width, height);
+            }];
+        });
+
+        frames.forEach(frame => {
+            frame();
+            encoder.addFrame(ctx);
+        });
+
+        encoder.finish();
+    });
+}
+
+async function handleSoundMorse(interaction, morseCode) {
     try {
         await interaction.deferReply();
         const audioBuffer = await createMorseAudio(morseCode);
@@ -534,11 +540,11 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   const port = process.env.PORT || 4000;
 
   app.get('/', (req, res) => {
-  res.send('Morse Code Online')
+  res.send('Hello World!')
  })
 
   app.listen(port, () => {
-  console.log(`morse app listening on port ${port}`)
+  console.log(`Example app listening on port ${port}`)
  })
   
   client.login(process.env.DISCORD_BOT_TOKEN);  
