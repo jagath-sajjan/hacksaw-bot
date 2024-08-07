@@ -588,3 +588,4 @@ async function handleSoundMorse(interaction, morseCode) {
  });
   
   client.login(process.env.DISCORD_BOT_TOKEN);
+// lol idek why this comment
