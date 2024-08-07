@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Information</title>
+    <style>
+        body {
+            background-color: #2e2e2e;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            border-radius: 50%;
+            border: 5px solid #00ff00;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .header h1 {
+            margin-left: 20px;
+            font-size: 2em;
+        }
+        .card {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+            color: #ff6f61;
+        }
+        .card p {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        .card a {
+            color: #00bfff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .card a:hover {
+            text-decoration: underline;
+        }
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .buttons a {
+            background-color: #6c5ce7;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+        .buttons a:hover {
+            background-color: #5a4fcf;
+        }
+        .banner img {
+            width: 100%;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://i.ibb.co/kQd588T/image.png" alt="Bot Profile Picture">
+            <h1>My Discord Bot</h1>
+        </div>
+        <div class="banner">
+            <img src="https://i.ibb.co/vYZB9D2/welcome-little-one-2.png" alt="Banner">
+        </div>
+        <div class="card">
+            <h2>Bot Information</h2>
+            <p>It's a Slash Command Bot coded in Node.js and Docker.</p>
+            <p>Command List:</p>
+            <ul>
+                <li>/help</li>
+                <li>/ping</li>
+                <li>/roll</li>
+                <li>/coin-flip</li>
+                <li>/qr</li>
+                <li>/morse</li>
+                <li>/demorse</li>
+            </ul>
+            <p>And in /morse, there are 3 buttons: Copy Morse, Light Morse, and Sound Morse. Isn't it cool? So add it to your server and look cool. Hehe. Thanks for the support!</p>
+        </div>
+        <div class="buttons">
+            <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758119092813777&redirect_uri=https%3A%2F%2Fdiscord.com%2Foauth2%2Fauthorize%3Fclient_id%3D1270040432427925677%26permissions%3D1758119092813777%26integration_type%3D0%26scope%3Dbot%2Bapplications.commands&integration_type=0&scope=bot+applications.commands" target="_blank">Invite Bot</a>
+            <a href="https://github.com/jagath-sajjan" target="_blank">Bot Creator</a>
+            <a href="https://youtube.com/@nobooklad" target="_blank">YouTube</a>
+        </div>
+    </div>
+</body>
+</html>
