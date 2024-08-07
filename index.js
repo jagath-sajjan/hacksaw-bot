@@ -428,13 +428,17 @@ async function createMorseGif(morseCode) {
     const ctx = canvas.getContext('2d');
     
     return new Promise((resolve, reject) => {
+        const stream = encoder.createReadStream();
         const buffers = [];
-        encoder.createReadStream().on('data', buffer => buffers.push(buffer)).on('end', () => resolve(Buffer.concat(buffers)));
+
+        stream.on('data', buffer => buffers.push(buffer));
+        stream.on('end', () => resolve(Buffer.concat(buffers)));
+        stream.on('error', reject);
 
         encoder.start();
-        encoder.setRepeat(0);
-        encoder.setDelay(200);
-        encoder.setQuality(10);
+        encoder.setRepeat(0); // 0 for repeat, -1 for no-repeat
+        encoder.setDelay(200); // frame delay in ms
+        encoder.setQuality(10); // image quality, lower is better
 
         const frames = morseCode.split('').flatMap(char => {
             if (char === '.' || char === '-') {
