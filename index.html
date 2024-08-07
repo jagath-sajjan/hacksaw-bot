@@ -11,43 +11,60 @@
             color: #e0e0e0;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         header {
+            background-color: #2e2e2e;
+            width: 100%;
             text-align: center;
             padding: 20px;
-            background-color: #2e2e2e;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
         header img {
             border-radius: 50%;
             border: 5px solid #4caf50;
             width: 120px;
             height: 120px;
+            margin: 0 auto;
         }
-        h1 {
-            margin-top: 10px;
+        header h1 {
+            margin: 10px 0 0;
             color: #b39ddb;
+            font-size: 24px;
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            max-width: 800px;
+            width: 100%;
             padding: 20px;
+            box-sizing: border-box;
         }
         .card {
             background: #333;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            margin: 20px;
+            margin: 20px auto;
             padding: 20px;
-            width: 300px;
             text-align: center;
+            width: 100%;
         }
         .card h2 {
             margin-top: 0;
             color: #b39ddb;
+            font-size: 20px;
         }
         .card p {
             color: #e0e0e0;
+            margin: 10px 0;
+        }
+        .card ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .card li {
+            margin: 5px 0;
         }
         .button {
             display: inline-block;
@@ -59,9 +76,24 @@
             font-size: 16px;
             margin: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
         .button:hover {
             background-color: #5a6d9a;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        @media (max-width: 600px) {
+            header img {
+                width: 100px;
+                height: 100px;
+            }
+            header h1 {
+                font-size: 20px;
+            }
+            .button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -86,9 +118,11 @@
             </ul>
             <p>In /morse there are 3 buttons: Copy Morse, Light Morse, and Sound Morse. Isn't it cool? So add it to your server and look cool. Hehe, thanks for the support.</p>
         </div>
-        <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758119092813777&redirect_uri=https%3A%2F%2Fdiscord.com%2Foauth2%2Fauthorize%3Fclient_id%3D1270040432427925677%26permissions%3D1758119092813777%26integration_type%3D0%26scope%3Dbot%2Bapplications.commands&integration_type=0&scope=bot+applications.commands" class="button" target="_blank">Invite Bot</a>
-        <a href="https://github.com/jagath-sajjan" class="button" target="_blank">Bot Creator</a>
-        <a href="https://youtube.com/@nobooklad" class="button" target="_blank">YouTube</a>
+        <div class="buttons">
+            <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758119092813777&redirect_uri=https%3A%2F%2Fdiscord.com%2Foauth2%2Fauthorize%3Fclient_id%3D1270040432427925677%26permissions%3D1758119092813777%26integration_type%3D0%26scope%3Dbot%2Bapplications.commands&integration_type=0&scope=bot+applications.commands" class="button" target="_blank">Invite Bot</a>
+            <a href="https://github.com/jagath-sajjan" class="button" target="_blank">Bot Creator</a>
+            <a href="https://youtube.com/@nobooklad" class="button" target="_blank">YouTube</a>
+        </div>
     </div>
 </body>
 </html>
