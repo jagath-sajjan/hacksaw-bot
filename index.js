@@ -59,88 +59,6 @@ const path = require('path');
     ],
 });
 
-const commands = [
-    {
-        name: 'ping',
-        description: 'Show bot latency'
-    },
-    {
-        name: 'help',
-        description: 'Show all available commands'
-    },
-    {
-        name: 'qr',
-        description: 'Generate a QR code',
-        options: [
-            {
-                name: 'type',
-                type: ApplicationCommandOptionType.String,
-                description: 'Type of content (upi, paypal, or other)',
-                required: true,
-                choices: [
-                    { name: 'UPI', value: 'upi' },
-                    { name: 'PayPal', value: 'paypal' },
-                    { name: 'Other', value: 'other' }
-                ]
-            },
-            {
-                name: 'content',
-                type: ApplicationCommandOptionType.String,
-                description: 'The content to encode in the QR code',
-                required: true
-            }
-        ]
-    },
-    {
-        name: '>morse',
-        description: 'Convert text to Morse code',
-        options: [
-            {
-                name: 'text',
-                type: ApplicationCommandOptionType.String,
-                description: 'The text to convert to Morse code',
-                required: true
-            }
-        ]
-    },
-    {
-        name: '>demorse',
-        description: 'Convert Morse code to text',
-        options: [
-            {
-                name: 'morse',
-                type: ApplicationCommandOptionType.String,
-                description: 'The Morse code to convert to text',
-                required: true
-            }
-        ]
-    },
-    {
-        name: '>ligmorse',
-        description: 'Show Morse code with a visual display'
-    },
-    {
-        name: '>smorse',
-        description: 'Play Morse code audio'
-    },
-    {
-        name: 'coin-flip',
-        description: 'Flip a coin'
-    },
-    {
-        name: 'roll',
-        description: 'Roll a die',
-        options: [
-            {
-                name: 'sides',
-                type: ApplicationCommandOptionType.Integer,
-                description: 'Number of sides on the die',
-                required: true
-            }
-        ]
-    }
-];
-
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
@@ -148,7 +66,55 @@ client.on('ready', async () => {
         const rest = new REST({ version: '9' }).setToken(client.token);
         await rest.put(
             Routes.applicationCommands(client.user.id),
-            { body: commands },
+            { body: [
+                {
+                    name: 'ping',
+                    description: 'Show bot latency'
+                },
+                {
+                    name: 'help',
+                    description: 'Show all available commands'
+                },
+                {
+                    name: 'qr',
+                    description: 'Generate a QR code',
+                    options: [
+                        {
+                            name: 'type',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'Type of content (upi, paypal, or other)',
+                            required: true,
+                            choices: [
+                                { name: 'UPI', value: 'upi' },
+                                { name: 'PayPal', value: 'paypal' },
+                                { name: 'Other', value: 'other' }
+                            ]
+                        },
+                        {
+                            name: 'content',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The content to encode in the QR code',
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: 'coin-flip',
+                    description: 'Flip a coin'
+                },
+                {
+                    name: 'roll',
+                    description: 'Roll a die',
+                    options: [
+                        {
+                            name: 'sides',
+                            type: ApplicationCommandOptionType.Integer,
+                            description: 'Number of sides on the die',
+                            required: true
+                        }
+                    ]
+                }
+            ] },
         );
     } catch (error) {
         console.error('Error registering slash commands:', error);
@@ -217,7 +183,7 @@ client.on('ready', async () => {
       }
   }
   
-  client.on('interactionCreate', async interaction => {
+  cclient.on('interactionCreate', async interaction => {
     if (!interaction.inGuild()) {
         await interaction.reply("This bot only works in servers, not private messages.");
         return;
@@ -251,20 +217,12 @@ client.on('ready', async () => {
             const type = interaction.options.getString('type');
             const content = interaction.options.getString('content');
             await handleQR(interaction, type, content);
-        } else if (command === '>morse') {
-            const text = interaction.options.getString('text');
-            await handleMorse(interaction, text);
-        } else if (command === '>demorse') {
-            const morse = interaction.options.getString('morse');
-            await handleDemorse(interaction, morse);
-        } else if (command === '>ligmorse') {
-            await handleLightMorse(interaction);
-        } else if (command === '>smorse') {
-            await handleSoundMorse(interaction);
         } else if (command === 'coin-flip') {
             await handleCoinFlip(interaction);
         } else if (command === 'roll') {
             await handleRoll(interaction);
+        } else if (command.startsWith('>')) {
+            await handleMorseCommand(interaction, command.slice(1), interaction.options);
         }
     }
 });
@@ -283,6 +241,20 @@ client.on('ready', async () => {
       const result = Math.floor(Math.random() * sides) + 1;
       await interaction.reply(`You rolled a **${result}** on a ${sides}-sided die.`);
   }
+
+  async function handleMorseCommand(interaction, command, options) {
+    if (command === 'morse') {
+        const text = options.getString('text');
+        await handleMorse(interaction, text);
+    } else if (command === 'demorse') {
+        const morse = options.getString('morse');
+        await handleDemorse(interaction, morse);
+    } else if (command === 'ligmorse') {
+        await handleLightMorse(interaction);
+    } else if (command === 'smorse') {
+        await handleSoundMorse(interaction);
+    }
+}
   
   async function handleMorse(interaction, text) {
     const morseCode = textToMorse(text);
@@ -523,17 +495,16 @@ async function handleSoundMorse(interaction) {
   }
   
   const app = express();
-  const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 
-  app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname)));
 
-  app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
- });
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-   app.listen(port, () => {
-  console.log(`Morse app listening on port ${port}`);
- });
-  
-  client.login(process.env.DISCORD_BOT_TOKEN);
-// lol idek why this comment
+app.listen(port, () => {
+    console.log(`Morse app listening on port ${port}`);
+});
+
+client.login(process.env.DISCORD_BOT_TOKEN);
