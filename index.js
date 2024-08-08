@@ -445,14 +445,33 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         await interaction.deferReply();
         const gifBuffer = await createMorseGif(morseCode);
         if (!gifBuffer) {
-            await interaction.followUp('Error generating GIF. Please try again.');
+            await interaction.editReply('Error generating GIF. Please try again.');
             return;
         }
         const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
-        await interaction.followUp({ content: 'Light Morse code:', files: [attachment] });
+        
+        // Create a new ActionRowBuilder with the updated button states
+        const row = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('copy_morse')
+                    .setLabel('Copy Morse Code')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('lightMorse')
+                    .setLabel('Light Morse')
+                    .setDisabled(true)
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('soundMorse')
+                    .setLabel('Sound Morse')
+                    .setStyle(ButtonStyle.Primary)
+            );
+
+        await interaction.editReply({ content: 'Light Morse code:', files: [attachment], components: [row] });
     } catch (error) {
         console.error('Error handling Light Morse:', error);
-        await interaction.followUp(`An error occurred while processing your request. Error: ${error.message}`);
+        await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
     }
 }
 
@@ -509,14 +528,33 @@ async function handleSoundMorse(interaction, morseCode) {
         await interaction.deferReply();
         const audioBuffer = await createMorseAudio(morseCode);
         if (!audioBuffer) {
-            await interaction.followUp('Error generating audio file. Please try again.');
+            await interaction.editReply('Error generating audio file. Please try again.');
             return;
         }
         const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
-        await interaction.followUp({ content: 'Sound Morse code:', files: [attachment] });
+
+        // Create a new ActionRowBuilder with the updated button states
+        const row = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('copy_morse')
+                    .setLabel('Copy Morse Code')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('lightMorse')
+                    .setLabel('Light Morse')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('soundMorse')
+                    .setLabel('Sound Morse')
+                    .setDisabled(true)
+                    .setStyle(ButtonStyle.Primary)
+            );
+
+        await interaction.editReply({ content: 'Sound Morse code:', files: [attachment], components: [row] });
     } catch (error) {
         console.error('Error handling Sound Morse:', error);
-        await interaction.followUp(`An error occurred while processing your request. Error: ${error.message}`);
+        await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
     }
 }
   
