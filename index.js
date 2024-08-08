@@ -157,7 +157,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         const sent = await interaction.fetchReply();
 
         const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
-        const wsLatency = client.ws.ping;
+        const wsLatency = interaction.client.ws.ping;
 
         const embed = new EmbedBuilder()
             .setTitle('Ping Information')
@@ -168,7 +168,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
             .setColor('Green')
             .setFooter({ text: footerText });
 
-        await interaction.followUp({ content: null, embeds: [embed] });
+        await interaction.editReply({ content: null, embeds: [embed] });
     } catch (error) {
         console.error('Error in handlePing:', error);
         await interaction.followUp({ content: "An error occurred while processing your request.", ephemeral: true });
@@ -176,20 +176,20 @@ if (typeof globalThis.ReadableStream === 'undefined') {
 }
   
   async function handleQR(interaction, type, content) {
-      const qrAttachment = await generateQRCode(type, content);
-      if (qrAttachment) {
-          const embed = new EmbedBuilder()
-              .setTitle(`Generated QR Code (${type.toUpperCase()})`)
-              .setDescription(`Content: ${content}`)
-              .setImage('attachment://qrcode.png')
-              .setColor('Blue')
-              .setFooter({ text: footerText });
-  
-          await interaction.reply({ embeds: [embed], files: [qrAttachment] });
-      } else {
-          await interaction.reply('Sorry, there was an error generating the QR code. Please try again.');
-      }
-  }
+    const qrAttachment = await generateQRCode(type, content);
+    if (qrAttachment) {
+        const embed = new EmbedBuilder()
+            .setTitle(`Generated QR Code (${type.toUpperCase()})`)
+            .setDescription(`Content: ${content}`)
+            .setImage('attachment://qrcode.png')
+            .setColor('Blue')
+            .setFooter({ text: footerText });
+
+        await interaction.reply({ embeds: [embed], files: [qrAttachment] });
+    } else {
+        await interaction.reply('Sorry, there was an error generating the QR code. Please try again.');
+    }
+}
   
   async function generateQRCode(type, content) {
       let qrContent;
@@ -214,6 +214,11 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
   
   client.on('interactionCreate', async interaction => {
+    if (!interaction.inGuild()) {
+        await interaction.reply("This bot only works in servers, not private messages.");
+        return;
+    }
+
     if (!interaction.isCommand() && !interaction.isButton()) return;
 
     if (interaction.isCommand()) {
@@ -260,24 +265,20 @@ if (typeof globalThis.ReadableStream === 'undefined') {
             const message = await interaction.message.fetch();
             const morseCode = message.embeds[0].fields.find(field => field.name === 'Morse Code').value;
             await interaction.reply({ content: `Copied Morse Code: \`${morseCode}\``, ephemeral: true });
+            interaction.component.setDisabled(true);
+            await interaction.update({ components: [interaction.message.components[0]] });
         } else if (interaction.customId === 'lightMorse') {
             const message = await interaction.message.fetch();
             const morseCode = message.embeds[0].fields.find(field => field.name === 'Morse Code').value;
             await handleLightMorse(interaction, morseCode);
-
-            // Disable the button after clicking
-            const row = message.components[0];
-            row.components[1].setDisabled(true);
-            await interaction.update({ components: [row] });
+            interaction.component.setDisabled(true);
+            await interaction.update({ components: [interaction.message.components[0]] });
         } else if (interaction.customId === 'soundMorse') {
             const message = await interaction.message.fetch();
             const morseCode = message.embeds[0].fields.find(field => field.name === 'Morse Code').value;
             await handleSoundMorse(interaction, morseCode);
-
-            // Disable the button after clicking
-            const row = message.components[0];
-            row.components[2].setDisabled(true);
-            await interaction.update({ components: [row] });
+            interaction.component.setDisabled(true);
+            await interaction.update({ components: [interaction.message.components[0]] });
         }
     }
 });
@@ -325,7 +326,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
                 .setStyle(ButtonStyle.Primary)
         );
 
-    const reply = await interaction.reply({ embeds: [embed], components: [row] });
+    const message = await interaction.reply({ embeds: [embed], components: [row] });
 
     const filter = i => i.user.id === interaction.user.id;
     const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
@@ -333,23 +334,22 @@ if (typeof globalThis.ReadableStream === 'undefined') {
     collector.on('collect', async i => {
         if (i.customId === 'copy_morse') {
             await i.reply({ content: `Copied Morse Code: \`${morseCode}\``, ephemeral: true });
+            i.component.setDisabled(true);
+            await i.update({ components: [row] });
         } else if (i.customId === 'lightMorse') {
             await handleLightMorse(i, morseCode);
-
-            // Disable the button after clicking
-            row.components[1].setDisabled(true);
-            await reply.edit({ components: [row] });
+            i.component.setDisabled(true);
+            await i.update({ components: [row] });
         } else if (i.customId === 'soundMorse') {
             await handleSoundMorse(i, morseCode);
-
-            // Disable the button after clicking
-            row.components[2].setDisabled(true);
-            await reply.edit({ components: [row] });
+            i.component.setDisabled(true);
+            await i.update({ components: [row] });
         }
     });
 
     collector.on('end', async () => {
-        await reply.edit({ components: [] });
+        const updatedRow = row.components.map(button => button.setDisabled(true));
+        await message.edit({ components: [new ActionRowBuilder().addComponents(updatedRow)] });
     });
 }
   
@@ -450,23 +450,6 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         }
         const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
 
-        const row = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('copy_morse')
-                    .setLabel('Copy Morse Code')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('lightMorse')
-                    .setLabel('Light Morse')
-                    .setDisabled(true)
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('soundMorse')
-                    .setLabel('Sound Morse')
-                    .setStyle(ButtonStyle.Primary)
-            );
-
         const embed = new EmbedBuilder()
             .setTitle('Text to Morse Code Conversion')
             .addFields(
@@ -476,7 +459,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
             .setColor('Blue')
             .setFooter({ text: footerText });
 
-        await interaction.editReply({ content: 'Light Morse code:', embeds: [embed], files: [attachment], components: [row] });
+        await interaction.editReply({ content: 'Light Morse code:', embeds: [embed], files: [attachment] });
     } catch (error) {
         console.error('Error handling Light Morse:', error);
         await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
@@ -541,23 +524,6 @@ async function handleSoundMorse(interaction, morseCode) {
         }
         const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
 
-        const row = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('copy_morse')
-                    .setLabel('Copy Morse Code')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('lightMorse')
-                    .setLabel('Light Morse')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('soundMorse')
-                    .setLabel('Sound Morse')
-                    .setDisabled(true)
-                    .setStyle(ButtonStyle.Primary)
-            );
-
         const embed = new EmbedBuilder()
             .setTitle('Text to Morse Code Conversion')
             .addFields(
@@ -567,7 +533,7 @@ async function handleSoundMorse(interaction, morseCode) {
             .setColor('Purple')
             .setFooter({ text: footerText });
 
-        await interaction.editReply({ content: 'Sound Morse code:', embeds: [embed], files: [attachment], components: [row] });
+        await interaction.editReply({ content: 'Sound Morse code:', embeds: [embed], files: [attachment] });
     } catch (error) {
         console.error('Error handling Sound Morse:', error);
         await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
