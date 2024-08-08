@@ -492,7 +492,7 @@ async function createMorseGif(morseCode) {
     });
 }
 
-aasync function handleSoundMorse(interaction, morseCode) {
+async function handleSoundMorse(interaction, morseCode) {
     try {
         await interaction.deferReply({ ephemeral: true });
         const audioBuffer = await createMorseAudio(morseCode);
