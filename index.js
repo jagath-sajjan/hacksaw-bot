@@ -310,46 +310,33 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         .setColor('Blue')
         .setFooter({ text: footerText });
 
-    const row = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('copy_morse')
-                .setLabel('Copy Morse Code')
-                .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-                .setCustomId('lightMorse')
-                .setLabel('Light Morse')
-                .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-                .setCustomId('soundMorse')
-                .setLabel('Sound Morse')
-                .setStyle(ButtonStyle.Primary)
-        );
+    const message = await interaction.reply({ embeds: [embed], fetchReply: true });
 
-    const message = await interaction.reply({ embeds: [embed], components: [row] });
+    await message.react('📝'); // Copy Morse Code
+    await message.react('💡'); // Light Morse Code
+    await message.react('🔊'); // Sound Morse Code
 
-    const filter = i => i.user.id === interaction.user.id;
-    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+    const filter = (reaction, user) => {
+        return ['📝', '💡', '🔊'].includes(reaction.emoji.name) && user.id === interaction.user.id;
+    };
 
-    collector.on('collect', async i => {
-        if (i.customId === 'copy_morse') {
-            await i.reply({ content: `Copied Morse Code: \`${morseCode}\``, ephemeral: true });
-            i.component.setDisabled(true);
-            await i.update({ components: [row] });
-        } else if (i.customId === 'lightMorse') {
-            await handleLightMorse(i, morseCode);
-            i.component.setDisabled(true);
-            await i.update({ components: [row] });
-        } else if (i.customId === 'soundMorse') {
-            await handleSoundMorse(i, morseCode);
-            i.component.setDisabled(true);
-            await i.update({ components: [row] });
+    const collector = message.createReactionCollector({ filter, time: 60000, max: 1 });
+
+    collector.on('collect', async (reaction, user) => {
+        if (reaction.emoji.name === '📝') {
+            await interaction.followUp({ content: `Copied Morse Code: \`${morseCode}\``, ephemeral: true });
+        } else if (reaction.emoji.name === '💡') {
+            await handleLightMorse(interaction, morseCode);
+        } else if (reaction.emoji.name === '🔊') {
+            await handleSoundMorse(interaction, morseCode);
         }
+
+        // Remove all reactions after the action
+        await message.reactions.removeAll();
     });
 
     collector.on('end', async () => {
-        const updatedRow = row.components.map(button => button.setDisabled(true));
-        await message.edit({ components: [new ActionRowBuilder().addComponents(updatedRow)] });
+        await message.reactions.removeAll().catch(() => {}); // Remove reactions in case of timeout
     });
 }
   
@@ -442,7 +429,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   
   async function handleLightMorse(interaction, morseCode) {
     try {
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         const gifBuffer = await createMorseGif(morseCode);
         if (!gifBuffer) {
             await interaction.editReply('Error generating GIF. Please try again.');
@@ -450,16 +437,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         }
         const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
 
-        const embed = new EmbedBuilder()
-            .setTitle('Text to Morse Code Conversion')
-            .addFields(
-                { name: 'Original Text', value: 'hellooo' },
-                { name: 'Morse Code', value: morseCode }
-            )
-            .setColor('Blue')
-            .setFooter({ text: footerText });
-
-        await interaction.editReply({ content: 'Light Morse code:', embeds: [embed], files: [attachment] });
+        await interaction.editReply({ content: 'Here is your light Morse code:', files: [attachment] });
     } catch (error) {
         console.error('Error handling Light Morse:', error);
         await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
@@ -514,9 +492,9 @@ async function createMorseGif(morseCode) {
     });
 }
 
-async function handleSoundMorse(interaction, morseCode) {
+aasync function handleSoundMorse(interaction, morseCode) {
     try {
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         const audioBuffer = await createMorseAudio(morseCode);
         if (!audioBuffer) {
             await interaction.editReply('Error generating audio file. Please try again.');
@@ -524,16 +502,7 @@ async function handleSoundMorse(interaction, morseCode) {
         }
         const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
 
-        const embed = new EmbedBuilder()
-            .setTitle('Text to Morse Code Conversion')
-            .addFields(
-                { name: 'Original Text', value: 'hellooo' },
-                { name: 'Morse Code', value: morseCode }
-            )
-            .setColor('Purple')
-            .setFooter({ text: footerText });
-
-        await interaction.editReply({ content: 'Sound Morse code:', embeds: [embed], files: [attachment] });
+        await interaction.editReply({ content: 'Here is your sound Morse code:', files: [attachment] });
     } catch (error) {
         console.error('Error handling Sound Morse:', error);
         await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
