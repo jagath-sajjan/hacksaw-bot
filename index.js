@@ -449,8 +449,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
             return;
         }
         const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
-        
-        // Create a new ActionRowBuilder with the updated button states
+
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -468,7 +467,16 @@ if (typeof globalThis.ReadableStream === 'undefined') {
                     .setStyle(ButtonStyle.Primary)
             );
 
-        await interaction.editReply({ content: 'Light Morse code:', files: [attachment], components: [row] });
+        const embed = new EmbedBuilder()
+            .setTitle('Text to Morse Code Conversion')
+            .addFields(
+                { name: 'Original Text', value: 'hellooo' },
+                { name: 'Morse Code', value: morseCode }
+            )
+            .setColor('Blue')
+            .setFooter({ text: footerText });
+
+        await interaction.editReply({ content: 'Light Morse code:', embeds: [embed], files: [attachment], components: [row] });
     } catch (error) {
         console.error('Error handling Light Morse:', error);
         await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
@@ -533,7 +541,6 @@ async function handleSoundMorse(interaction, morseCode) {
         }
         const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
 
-        // Create a new ActionRowBuilder with the updated button states
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -551,7 +558,16 @@ async function handleSoundMorse(interaction, morseCode) {
                     .setStyle(ButtonStyle.Primary)
             );
 
-        await interaction.editReply({ content: 'Sound Morse code:', files: [attachment], components: [row] });
+        const embed = new EmbedBuilder()
+            .setTitle('Text to Morse Code Conversion')
+            .addFields(
+                { name: 'Original Text', value: 'hellooo' },
+                { name: 'Morse Code', value: morseCode }
+            )
+            .setColor('Purple')
+            .setFooter({ text: footerText });
+
+        await interaction.editReply({ content: 'Sound Morse code:', embeds: [embed], files: [attachment], components: [row] });
     } catch (error) {
         console.error('Error handling Sound Morse:', error);
         await interaction.editReply(`An error occurred while processing your request. Error: ${error.message}`);
