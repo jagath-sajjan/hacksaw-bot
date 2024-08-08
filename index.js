@@ -92,7 +92,7 @@ const commands = [
         ]
     },
     {
-        name: 'm!morse',
+        name: '>morse',
         description: 'Convert text to Morse code',
         options: [
             {
@@ -104,7 +104,7 @@ const commands = [
         ]
     },
     {
-        name: 'm!demorse',
+        name: '>demorse',
         description: 'Convert Morse code to text',
         options: [
             {
@@ -116,11 +116,11 @@ const commands = [
         ]
     },
     {
-        name: 'm!ligmorse',
+        name: '>ligmorse',
         description: 'Show Morse code with a visual display'
     },
     {
-        name: 'm!smorse',
+        name: '>smorse',
         description: 'Play Morse code audio'
     },
     {
@@ -237,10 +237,10 @@ client.on('ready', async () => {
                     { name: '/ping', value: 'Show bot latency', inline: true },
                     { name: '/help', value: 'Show all available commands', inline: true },
                     { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
-                    { name: 'm!morse [text]', value: 'Convert text to Morse code', inline: false },
-                    { name: 'm!demorse [morse]', value: 'Convert Morse code to text', inline: false },
-                    { name: 'm!ligmorse', value: 'Show Morse code with a visual display', inline: false },
-                    { name: 'm!smorse', value: 'Play Morse code audio', inline: false },
+                    { name: '>morse [text]', value: 'Convert text to Morse code', inline: false },
+                    { name: '>demorse [morse]', value: 'Convert Morse code to text', inline: false },
+                    { name: '>ligmorse', value: 'Show Morse code with a visual display', inline: false },
+                    { name: '>smorse', value: 'Play Morse code audio', inline: false },
                     { name: '/coin-flip', value: 'Flip a coin', inline: false },
                     { name: '/roll [sides]', value: 'Roll a die', inline: false }
                 )
@@ -251,15 +251,15 @@ client.on('ready', async () => {
             const type = interaction.options.getString('type');
             const content = interaction.options.getString('content');
             await handleQR(interaction, type, content);
-        } else if (command === 'm!morse') {
+        } else if (command === '>morse') {
             const text = interaction.options.getString('text');
             await handleMorse(interaction, text);
-        } else if (command === 'm!demorse') {
+        } else if (command === '>demorse') {
             const morse = interaction.options.getString('morse');
             await handleDemorse(interaction, morse);
-        } else if (command === 'm!ligmorse') {
+        } else if (command === '>ligmorse') {
             await handleLightMorse(interaction);
-        } else if (command === 'm!smorse') {
+        } else if (command === '>smorse') {
             await handleSoundMorse(interaction);
         } else if (command === 'coin-flip') {
             await handleCoinFlip(interaction);
