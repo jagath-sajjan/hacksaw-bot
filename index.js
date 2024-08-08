@@ -152,28 +152,28 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   });
   
   async function handlePing(interaction) {
-      try {
-          await interaction.deferReply();
-          const sent = await interaction.fetchReply();
-  
-          const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
-          const wsLatency = client.ws.ping;
-  
-          const embed = new EmbedBuilder()
-              .setTitle('Ping Information')
-              .addFields(
-                  { name: 'Roundtrip Latency', value: `${roundtripLatency}ms`, inline: true },
-                  { name: 'WebSocket Latency', value: `${wsLatency}ms`, inline: true }
-              )
-              .setColor('Green')
-              .setFooter({ text: footerText });
-  
-          await interaction.editReply({ content: null, embeds: [embed] });
-      } catch (error) {
-          console.error('Error in handlePing:', error);
-          await interaction.followUp({ content: "An error occurred while processing your request.", ephemeral: true });
-      }
-  }
+    try {
+        await interaction.deferReply();
+        const sent = await interaction.fetchReply();
+
+        const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
+        const wsLatency = client.ws.ping;
+
+        const embed = new EmbedBuilder()
+            .setTitle('Ping Information')
+            .addFields(
+                { name: 'Roundtrip Latency', value: `${roundtripLatency}ms`, inline: true },
+                { name: 'WebSocket Latency', value: `${wsLatency}ms`, inline: true }
+            )
+            .setColor('Green')
+            .setFooter({ text: footerText });
+
+        await interaction.followUp({ content: null, embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handlePing:', error);
+        await interaction.followUp({ content: "An error occurred while processing your request.", ephemeral: true });
+    }
+}
   
   async function handleQR(interaction, type, content) {
       const qrAttachment = await generateQRCode(type, content);
@@ -445,14 +445,14 @@ if (typeof globalThis.ReadableStream === 'undefined') {
         await interaction.deferReply();
         const gifBuffer = await createMorseGif(morseCode);
         if (!gifBuffer) {
-            await interaction.editReply('Error generating GIF. Please try again.');
+            await interaction.followUp('Error generating GIF. Please try again.');
             return;
         }
         const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
-        await interaction.editReply({ content: 'Light Morse code:', files: [attachment] });
+        await interaction.followUp({ content: 'Light Morse code:', files: [attachment] });
     } catch (error) {
         console.error('Error handling Light Morse:', error);
-        await interaction.editReply('An error occurred while processing your request. Error: ' + error.message);
+        await interaction.followUp(`An error occurred while processing your request. Error: ${error.message}`);
     }
 }
 
@@ -509,14 +509,14 @@ async function handleSoundMorse(interaction, morseCode) {
         await interaction.deferReply();
         const audioBuffer = await createMorseAudio(morseCode);
         if (!audioBuffer) {
-            await interaction.editReply('Error generating audio file. Please try again.');
+            await interaction.followUp('Error generating audio file. Please try again.');
             return;
         }
         const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
-        await interaction.editReply({ content: 'Sound Morse code:', files: [attachment] });
+        await interaction.followUp({ content: 'Sound Morse code:', files: [attachment] });
     } catch (error) {
         console.error('Error handling Sound Morse:', error);
-        await interaction.editReply('An error occurred while processing your request. Error: ' + error.message);
+        await interaction.followUp(`An error occurred while processing your request. Error: ${error.message}`);
     }
 }
   
