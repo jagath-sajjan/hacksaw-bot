@@ -183,7 +183,7 @@ client.on('ready', async () => {
       }
   }
   
-  cclient.on('interactionCreate', async interaction => {
+  client.on('interactionCreate', async interaction => {
     if (!interaction.inGuild()) {
         await interaction.reply("This bot only works in servers, not private messages.");
         return;
