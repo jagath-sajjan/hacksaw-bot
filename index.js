@@ -293,6 +293,8 @@ async function handleMorse(interaction) {
 }
 
 async function handleDemorse(interaction) {
+    await interaction.deferReply(); // Defer the reply to prevent timeout
+
     const morse = interaction.options.getString('morse');
     const decodedText = morseToText(morse);
 
@@ -300,12 +302,12 @@ async function handleDemorse(interaction) {
         .setTitle('Morse Code to Text Conversion')
         .addFields(
             { name: 'Morse Code', value: morse },
-            { name: 'Decoded Text', value: decodedText }
+            { name: 'Decoded Text', value: decodedText || 'Unable to decode' }
         )
         .setColor('Purple')
         .setFooter({ text: footerText });
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }
 
 async function handleLightMorse(interaction) {
