@@ -189,10 +189,6 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-function isMorseCode(input) {
-    return /^[.-\s/]+$/.test(input);
-}
-
 async function handlePing(interaction) {
     const sent = await interaction.fetchReply();
     const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
@@ -208,7 +204,7 @@ async function handlePing(interaction) {
         .setFooter({ text: footerText });
 
     await interaction.editReply({ embeds: [embed] });
-
+}
 
 async function handleHelp(interaction) {
     const embed = new EmbedBuilder()
@@ -267,18 +263,14 @@ async function handleQR(interaction) {
     const type = interaction.options.getString('type');
     const content = interaction.options.getString('content');
     const qrAttachment = await generateQRCode(type, content);
-    if (qrAttachment) {
-        const embed = new EmbedBuilder()
-            .setTitle(`Generated QR Code (${type.toUpperCase()})`)
-            .setDescription(`Content: ${content}`)
-            .setImage('attachment://qrcode.png')
-            .setColor('Blue')
-            .setFooter({ text: footerText });
+    const embed = new EmbedBuilder()
+        .setTitle(`Generated QR Code (${type.toUpperCase()})`)
+        .setDescription(`Content: ${content}`)
+        .setImage('attachment://qrcode.png')
+        .setColor('Blue')
+        .setFooter({ text: footerText });
 
-        await interaction.editReply({ embeds: [embed], files: [qrAttachment] });
-    } else {
-        await interaction.editReply('Sorry, there was an error generating the QR code. Please try again.');
-    }
+    await interaction.editReply({ embeds: [embed], files: [qrAttachment] });
 }
 
 async function generateQRCode(type, content) {
@@ -294,13 +286,8 @@ async function generateQRCode(type, content) {
             qrContent = content;
     }
 
-    try {
-        const buffer = await QRCode.toBuffer(qrContent);
-        return new AttachmentBuilder(buffer, { name: 'qrcode.png' });
-    } catch (error) {
-        console.error('Error generating QR code:', error);
-        return null;
-    }
+    const buffer = await QRCode.toBuffer(qrContent);
+    return new AttachmentBuilder(buffer, { name: 'qrcode.png' });
 }
 
 async function handleCoinFlip(interaction) {
@@ -310,10 +297,6 @@ async function handleCoinFlip(interaction) {
 
 async function handleRoll(interaction) {
     const sides = interaction.options.getInteger('sides');
-    if (sides < 2) {
-        await interaction.editReply('A die must have at least 2 sides.');
-        return;
-    }
     const result = Math.floor(Math.random() * sides) + 1;
     await interaction.editReply(`You rolled a **${result}** on a ${sides}-sided die.`);
 }
@@ -342,7 +325,7 @@ async function handleDemorse(interaction) {
         .setTitle('Morse Code to Text Conversion')
         .addFields(
             { name: 'Morse Code', value: morse },
-            { name: 'Decoded Text', value: decodedText || 'Unable to decode' }
+            { name: 'Decoded Text', value: decodedText }
         )
         .setColor('Purple')
         .setFooter({ text: footerText });
@@ -352,16 +335,8 @@ async function handleDemorse(interaction) {
 
 async function handleLightMorse(interaction) {
     const input = interaction.options.getString('input');
-    if (!input) {
-        await interaction.editReply('Please provide input text or Morse code.');
-        return;
-    }
     const morseCode = isMorseCode(input) ? input : textToMorse(input);
     const gifBuffer = await createMorseGif(morseCode);
-    if (!gifBuffer) {
-        await interaction.editReply('Error generating GIF. Please try again.');
-        return;
-    }
     const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
 
     await interaction.editReply({ content: `Here is a visual display of Morse code for: ${input}`, files: [attachment] });
@@ -369,16 +344,8 @@ async function handleLightMorse(interaction) {
 
 async function handleSoundMorse(interaction) {
     const input = interaction.options.getString('input');
-    if (!input) {
-        await interaction.editReply('Please provide input text or Morse code.');
-        return;
-    }
     const morseCode = isMorseCode(input) ? input : textToMorse(input);
     const audioBuffer = await createMorseAudio(morseCode);
-    if (!audioBuffer) {
-        await interaction.editReply('Error generating audio file. Please try again.');
-        return;
-    }
     const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
 
     await interaction.editReply({ content: `Here is the audio for the Morse code of: ${input}`, files: [attachment] });
@@ -420,9 +387,9 @@ async function handleLearn(interaction) {
     }
 
     embed.addFields(
-        { name: 'Alphabets', value: alphabets.trim() || 'None', inline: false },
-        { name: 'Numbers', value: numbers.trim() || 'None', inline: false },
-        { name: 'Symbols', value: symbols.trim() || 'None', inline: false }
+        { name: 'Alphabets', value: alphabets.trim(), inline: false },
+        { name: 'Numbers', value: numbers.trim(), inline: false },
+        { name: 'Symbols', value: symbols.trim(), inline: false }
     );
 
     await interaction.editReply({ embeds: [embed] });
@@ -456,6 +423,10 @@ function morseToText(morse) {
     return morse.split(' ').map(code => morseCode[code] || ' ').join('');
 }
 
+function isMorseCode(input) {
+    return /^[.-\s/]+$/.test(input);
+}
+
 async function createMorseGif(morseCode) {
     const width = 100;
     const height = 100;
@@ -463,45 +434,37 @@ async function createMorseGif(morseCode) {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
     
-    return new Promise((resolve, reject) => {
-        const stream = encoder.createReadStream();
-        const buffers = [];
+    encoder.start();
+    encoder.setRepeat(0);
+    encoder.setDelay(200);
+    encoder.setQuality(10);
 
-        stream.on('data', buffer => buffers.push(buffer));
-        stream.on('end', () => resolve(Buffer.concat(buffers)));
-        stream.on('error', reject);
-
-        encoder.start();
-        encoder.setRepeat(0);
-        encoder.setDelay(200);
-        encoder.setQuality(10);
-
-        const frames = morseCode.split('').flatMap(char => {
-            if (char === '.' || char === '-') {
-                return [
-                    () => {
-                        ctx.fillStyle = 'white';
-                        ctx.fillRect(0, 0, width, height);
-                    },
-                    () => {
-                        ctx.fillStyle = 'black';
-                        ctx.fillRect(0, 0, width, height);
-                    }
-                ];
-            }
-            return [() => {
-                ctx.fillStyle = 'black';
-                ctx.fillRect(0, 0, width, height);
-            }];
-        });
-
-        frames.forEach(frame => {
-            frame();
-            encoder.addFrame(ctx);
-        });
-
-        encoder.finish();
+    const frames = morseCode.split('').flatMap(char => {
+        if (char === '.' || char === '-') {
+            return [
+                () => {
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, width, height);
+                },
+                () => {
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(0, 0, width, height);
+                }
+            ];
+        }
+        return [() => {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, width, height);
+        }];
     });
+
+    frames.forEach(frame => {
+        frame();
+        encoder.addFrame(ctx);
+    });
+
+    encoder.finish();
+    return encoder.out.getData();
 }
 
 async function createMorseAudio(morseCode) {
