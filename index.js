@@ -247,7 +247,7 @@ async function handleHelp(interaction) {
         )
         .setColor('Green')
         .setFooter({ text: footerText });
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }
 
 async function handleBotInfo(interaction) {
@@ -279,7 +279,7 @@ async function handleBotInfo(interaction) {
                 .setURL('https://buymeacoffee.com/jagathsajjan')
         );
 
-    await interaction.reply({ embeds: [embed], components: [row] });
+    await interaction.editReply({ embeds: [embed], components: [row] });
 }
 
 async function handleQR(interaction) {
@@ -294,9 +294,9 @@ async function handleQR(interaction) {
             .setColor('Blue')
             .setFooter({ text: footerText });
 
-        await interaction.reply({ embeds: [embed], files: [qrAttachment] });
+        await interaction.editReply({ embeds: [embed], files: [qrAttachment] });
     } else {
-        await interaction.reply('Sorry, there was an error generating the QR code. Please try again.');
+        await interaction.editReply('Sorry, there was an error generating the QR code. Please try again.');
     }
 }
 
@@ -324,17 +324,17 @@ async function generateQRCode(type, content) {
 
 async function handleCoinFlip(interaction) {
     const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
-    await interaction.reply(`The coin landed on: **${result}**`);
+    await interaction.editReply(`The coin landed on: **${result}**`);
 }
 
 async function handleRoll(interaction) {
     const sides = interaction.options.getInteger('sides');
     if (sides < 2) {
-        await interaction.reply('A die must have at least 2 sides.');
+        await interaction.editReply('A die must have at least 2 sides.');
         return;
     }
     const result = Math.floor(Math.random() * sides) + 1;
-    await interaction.reply(`You rolled a **${result}** on a ${sides}-sided die.`);
+    await interaction.editReply(`You rolled a **${result}** on a ${sides}-sided die.`);
 }
 
 async function handleMorse(interaction) {
@@ -350,7 +350,7 @@ async function handleMorse(interaction) {
         .setColor('Blue')
         .setFooter({ text: footerText });
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }
 
 async function handleDemorse(interaction) {
@@ -448,7 +448,7 @@ async function handleLearn(interaction) {
         { name: 'Symbols', value: symbols.trim() || 'None', inline: false }
     );
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }
 
 function textToMorse(text) {
