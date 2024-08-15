@@ -162,7 +162,10 @@ client.on('interactionCreate', async interaction => {
     const command = interaction.commandName;
 
     try {
-        await interaction.deferReply();
+        // Only defer the reply for commands that might take longer
+        if (['qr', 'ligmorse', 'smorse'].includes(command)) {
+            await interaction.deferReply();
+        }
 
         switch (command) {
             case 'ping':
@@ -199,14 +202,15 @@ client.on('interactionCreate', async interaction => {
                 await handleBotInfo(interaction);
                 break;
             default:
-                await interaction.editReply('Unknown command');
+                await interaction.reply('Unknown command');
         }
     } catch (error) {
         console.error(`Error executing command ${command}:`, error);
-        try {
-            await interaction.editReply({ content: 'An error occurred while processing your request.', ephemeral: true });
-        } catch (replyError) {
-            console.error('Error sending error message:', replyError);
+        const errorMessage = `An error occurred while processing the '${command}' command: ${error.message}`;
+        if (interaction.deferred) {
+            await interaction.editReply({ content: errorMessage, ephemeral: true });
+        } else {
+            await interaction.reply({ content: errorMessage, ephemeral: true });
         }
     }
 });
@@ -283,7 +287,7 @@ async function handleBotInfo(interaction) {
                 .setURL('https://buymeacoffee.com/jagathsajjan')
         );
 
-    await interaction.editReply({ embeds: [embed], components: [row] });
+    await interaction.reply({ embeds: [embed], components: [row] });
 }
 
 async function handleQR(interaction) {
