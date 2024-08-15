@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Morse Bot</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,13 +16,24 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
         header {
-            background-color: #2e2e2e;
+            background-color: rgba(46, 46, 46, 0.8);
             width: 100%;
             text-align: center;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
         }
         header img {
             border-radius: 50%;
@@ -29,11 +41,18 @@
             width: 120px;
             height: 120px;
             margin: 0 auto;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         header h1 {
             margin: 10px 0 0;
             color: #b39ddb;
             font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
         .container {
             max-width: 800px;
@@ -43,15 +62,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
         .card {
-            background: #333;
+            background: rgba(51, 51, 51, 0.8);
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             margin: 20px auto;
             padding: 20px;
             text-align: center;
             width: 100%;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
         }
         .card h2 {
             margin-top: 0;
@@ -69,6 +95,10 @@
         }
         .card li {
             margin: 5px 0;
+            transition: color 0.3s ease;
+        }
+        .card li:hover {
+            color: #7289da;
         }
         .buttons {
             display: flex;
@@ -85,11 +115,27 @@
             font-size: 16px;
             margin: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.5s;
+        }
+        .button:hover:before {
+            left: 100%;
         }
         .button:hover {
             background-color: #5a6d9a;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            transform: translateY(-3px);
         }
         @media (max-width: 600px) {
             header img {
@@ -107,6 +153,7 @@
     </style>
 </head>
 <body>
+    <div id="canvas-container"></div>
     <header>
         <img src="https://i.ibb.co/kQd588T/image.png" alt="Bot Profile Picture">
         <h1>Morse Bot</h1>
@@ -131,7 +178,41 @@
             <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot" class="button" target="_blank">Invite Bot</a>
             <a href="https://github.com/jagath-sajjan" class="button" target="_blank">Bot Creator</a>
             <a href="https://youtube.com/@nobooklad" class="button" target="_blank">YouTube</a>
+            <a href="https://top.gg/bot/1270040432427925677" class="button" target="_blank">Vote Bot</a>
         </div>
     </div>
+
+    <script>
+        // Three.js animation
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        const material = new THREE.MeshBasicMaterial({ color: 0x7289da, wireframe: true });
+        const torusKnot = new THREE.Mesh(geometry, material);
+        scene.add(torusKnot);
+
+        camera.position.z = 30;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            torusKnot.rotation.x += 0.01;
+            torusKnot.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+    </script>
 </body>
 </html>
