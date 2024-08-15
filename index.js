@@ -220,8 +220,8 @@ async function handlePing(interaction) {
     const embed = new EmbedBuilder()
         .setTitle('Ping Information')
         .addFields(
-            { name: 'Roundtrip Latency: ', value: `${roundtripLatency}ms`, inline: true },
-            { name: 'WebSocket Latency: ', value: `${wsLatency}ms`, inline: true }
+            { name: 'Roundtrip Latency', value: `${roundtripLatency}ms`, inline: true },
+            { name: 'WebSocket Latency', value: `${wsLatency}ms`, inline: true }
         )
         .setColor('Green')
         .setFooter({ text: footerText });
@@ -256,10 +256,10 @@ async function handleBotInfo(interaction) {
         .setTitle('Morse Bot Information')
         .setThumbnail('https://i.ibb.co/kQd588T/image.png')
         .addFields(
-            { name: 'Bot Name: ', value: 'Morse', inline: true },
-            { name: 'Language: ', value: 'Javascript', inline: true },
-            { name: 'Hosted On: ', value: 'Raspberry Pi 3 [Banglore/IN]', inline: true },
-            { name: 'Creator: ', value: '[GitHub](https://github.com/jagath-sajjan) | [YouTube](https://youtube.com/@nobooklad)', inline: false }
+            { name: 'Bot Name', value: 'Morse', inline: true },
+            { name: 'Language', value: 'Javascript', inline: true },
+            { name: 'Hosted On', value: 'Raspberry Pi 3 [Banglore/IN]', inline: true },
+            { name: 'Creator', value: '[GitHub](https://github.com/jagath-sajjan) | [YouTube](https://youtube.com/@nobooklad)', inline: false }
         )
         .setFooter({ text: footerText });
 
