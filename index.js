@@ -162,6 +162,9 @@ client.on('interactionCreate', async interaction => {
 
     const command = interaction.commandName;
 
+    // Defer the reply for all commands
+    await interaction.deferReply();
+
     try {
         switch (command) {
             case 'ping':
@@ -202,7 +205,7 @@ client.on('interactionCreate', async interaction => {
         }
     } catch (error) {
         console.error(`Error executing command ${command}:`, error);
-        await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
+        await interaction.editReply({ content: 'An error occurred while processing your request.', ephemeral: true });
     }
 });
 
