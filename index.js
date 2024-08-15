@@ -114,11 +114,27 @@ client.on('ready', async () => {
                 },
                 {
                     name: 'ligmorse',
-                    description: 'Show Morse code with a visual display'
+                    description: 'Show Morse code with a visual display',
+                    options: [
+                        {
+                            name: 'input',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'Text or Morse code to display',
+                            required: true
+                        }
+                    ]
                 },
                 {
                     name: 'smorse',
-                    description: 'Play Morse code audio'
+                    description: 'Play Morse code audio',
+                    options: [
+                        {
+                            name: 'input',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'Text or Morse code to play',
+                            required: true
+                        }
+                    ]
                 },
                 {
                     name: 'learn',
@@ -312,26 +328,30 @@ async function handleDemorse(interaction) {
 
 async function handleLightMorse(interaction) {
     await interaction.deferReply();
-    const gifBuffer = await createMorseGif('... --- ...'); // Example Morse code
+    const input = interaction.options.getString('input');
+    const morseCode = isMorseCode(input) ? input : textToMorse(input);
+    const gifBuffer = await createMorseGif(morseCode);
     if (!gifBuffer) {
         await interaction.editReply('Error generating GIF. Please try again.');
         return;
     }
     const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
 
-    await interaction.editReply({ content: 'Here is a visual display of Morse code:', files: [attachment] });
+    await interaction.editReply({ content: `Here is a visual display of Morse code for: ${input}`, files: [attachment] });
 }
 
 async function handleSoundMorse(interaction) {
     await interaction.deferReply();
-    const audioBuffer = await createMorseAudio('... --- ...'); // Example Morse code
+    const input = interaction.options.getString('input');
+    const morseCode = isMorseCode(input) ? input : textToMorse(input);
+    const audioBuffer = await createMorseAudio(morseCode);
     if (!audioBuffer) {
         await interaction.editReply('Error generating audio file. Please try again.');
         return;
     }
     const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
 
-    await interaction.editReply({ content: 'Here is the audio for the Morse code:', files: [attachment] });
+    await interaction.editReply({ content: `Here is the audio for the Morse code of: ${input}`, files: [attachment] });
 }
 
 async function handleLearn(interaction) {
