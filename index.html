@@ -92,7 +92,7 @@
             padding: 30px;
             text-align: center;
             width: 100%;
-            max-width: 500px; /* Add max-width to center */
+            max-width: 500px;
             backdrop-filter: blur(10px);
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
@@ -112,28 +112,6 @@
             color: var(--text-color);
             margin: 15px 0;
             line-height: 1.6;
-        }
-
-        .card ul {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .card li {
-            margin: 10px;
-            padding: 10px 15px;
-            background-color: rgba(114, 137, 218, 0.2);
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .card li:hover {
-            background-color: rgba(114, 137, 218, 0.4);
-            transform: scale(1.05);
         }
 
         .buttons {
@@ -235,15 +213,27 @@
             .feature {
                 flex-basis: calc(50% - 20px);
             }
+            .card {
+                padding: 20px;
+            }
         }
 
         @media (max-width: 480px) {
             .card {
-                max-width: 90%; /* Makes cards responsive */
+                max-width: 90%;
                 margin: 20px auto;
+                padding: 15px;
             }
             .feature {
                 flex-basis: 100%;
+            }
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .button {
+                width: 80%;
+                margin: 10px 0;
             }
         }
     </style>
@@ -283,7 +273,7 @@
     </div>
 
     <script>
-         const scene = new THREE.Scene();
+        const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
