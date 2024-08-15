@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morse Bot</title>
+    <title>Morse Bot - Your Ultimate Discord Companion</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --primary-color: #7289da;
+            --secondary-color: #b39ddb;
+            --background-color: #1e1e1e;
+            --card-background: rgba(51, 51, 51, 0.8);
+            --text-color: #e0e0e0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
-            color: #e0e0e0;
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,6 +30,7 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
+
         #canvas-container {
             position: fixed;
             top: 0;
@@ -26,6 +39,7 @@
             height: 100%;
             z-index: -1;
         }
+
         header {
             background-color: rgba(46, 46, 46, 0.8);
             width: 100%;
@@ -35,27 +49,31 @@
             position: relative;
             z-index: 1;
         }
+
         header img {
             border-radius: 50%;
-            border: 5px solid #4caf50;
+            border: 5px solid var(--primary-color);
             width: 120px;
             height: 120px;
             margin: 0 auto;
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
         header h1 {
             margin: 10px 0 0;
-            color: #b39ddb;
-            font-size: 24px;
+            color: var(--secondary-color);
+            font-size: 32px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
+
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             width: 100%;
             padding: 20px;
             box-sizing: border-box;
@@ -65,60 +83,83 @@
             position: relative;
             z-index: 1;
         }
+
         .card {
-            background: rgba(51, 51, 51, 0.8);
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            background: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
             margin: 20px auto;
-            padding: 20px;
+            padding: 30px;
             text-align: center;
             width: 100%;
             backdrop-filter: blur(10px);
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
+
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
         }
+
         .card h2 {
             margin-top: 0;
-            color: #b39ddb;
-            font-size: 20px;
+            color: var(--secondary-color);
+            font-size: 24px;
         }
+
         .card p {
-            color: #e0e0e0;
-            margin: 10px 0;
+            color: var(--text-color);
+            margin: 15px 0;
+            line-height: 1.6;
         }
+
         .card ul {
             list-style: none;
             padding: 0;
-            margin: 10px 0;
-        }
-        .card li {
-            margin: 5px 0;
-            transition: color 0.3s ease;
-        }
-        .card li:hover {
-            color: #7289da;
-        }
-        .buttons {
+            margin: 20px 0;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
+
+        .card li {
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: rgba(114, 137, 218, 0.2);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card li:hover {
+            background-color: rgba(114, 137, 218, 0.4);
+            transform: scale(1.05);
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
         .button {
-            display: inline-block;
-            background-color: #7289da;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
             color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 25px;
             text-decoration: none;
             font-size: 16px;
+            font-weight: bold;
             margin: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
+
         .button:before {
             content: '';
             position: absolute;
@@ -129,25 +170,74 @@
             background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: all 0.5s;
         }
+
         .button:hover:before {
             left: 100%;
         }
+
         .button:hover {
             background-color: #5a6d9a;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
             transform: translateY(-3px);
         }
-        @media (max-width: 600px) {
+
+        .button i {
+            margin-right: 10px;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        .feature {
+            flex-basis: calc(33.333% - 20px);
+            margin: 10px;
+            padding: 20px;
+            background-color: rgba(114, 137, 218, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background-color: rgba(114, 137, 218, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .feature i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
             header img {
                 width: 100px;
                 height: 100px;
             }
             header h1 {
-                font-size: 20px;
+                font-size: 24px;
             }
             .button {
-                padding: 8px 16px;
+                padding: 10px 20px;
                 font-size: 14px;
+            }
+            .feature {
+                flex-basis: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .feature {
+                flex-basis: 100%;
             }
         }
     </style>
@@ -155,14 +245,33 @@
 <body>
     <div id="canvas-container"></div>
     <header>
-        <img src="https://i.ibb.co/kQd588T/image.png" alt="Bot Profile Picture">
+        <img src="https://i.ibb.co/kQd588T/image.png" alt="Morse Bot Profile Picture">
         <h1>Morse Bot</h1>
     </header>
     <div class="container">
         <div class="card">
-            <h2>Bot Info</h2>
-            <p>It's a Slash Command Bot Coded in Node.js and Docker.</p>
-            <p>Command List:</p>
+            <h2>Welcome to Morse Bot</h2>
+            <p>Elevate your Discord experience with Morse Bot - the ultimate companion for communication and fun!</p>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-code"></i>
+                    <h3>Morse Code Mastery</h3>
+                    <p>Encode and decode messages with ease using our advanced Morse code functionality.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-dice"></i>
+                    <h3>Interactive Commands</h3>
+                    <p>Enjoy a variety of fun and useful commands to keep your server engaged.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Lightning Fast</h3>
+                    <p>Experience quick response times and smooth performance.</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Powerful Commands at Your Fingertips</h2>
             <ul>
                 <li>/help</li>
                 <li>/ping</li>
@@ -170,15 +279,17 @@
                 <li>/coin-flip</li>
                 <li>/qr</li>
                 <li>/morse</li>
+                <li>/ligmorse</li>
+                <li>/smorse</li>
                 <li>/demorse</li>
             </ul>
-            <p>In /morse there are 3 buttons: Copy Morse, Light Morse, and Sound Morse. Isn't it cool? So add it to your server and look cool. Hehe, thanks for the support.</p>
+            <p>Discover the magic of /morse with its three amazing features: Copy Morse, Light Morse, and Sound Morse. Add Morse Bot to your server and impress your friends!</p>
         </div>
         <div class="buttons">
-            <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot" class="button" target="_blank">Invite Bot</a>
-            <a href="https://github.com/jagath-sajjan" class="button" target="_blank">Bot Creator</a>
-            <a href="https://youtube.com/@nobooklad" class="button" target="_blank">YouTube</a>
-            <a href="https://top.gg/bot/1270040432427925677" class="button" target="_blank">Vote Bot</a>
+            <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot" class="button" target="_blank"><i class="fab fa-discord"></i>Invite Bot</a>
+            <a href="https://github.com/jagath-sajjan" class="button" target="_blank"><i class="fab fa-github"></i>Bot Creator</a>
+            <a href="https://youtube.com/@nobooklad" class="button" target="_blank"><i class="fab fa-youtube"></i>YouTube</a>
+            <a href="https://top.gg/bot/1270040432427925677" class="button" target="_blank"><i class="fas fa-star"></i>Vote Bot</a>
         </div>
     </div>
 
@@ -212,6 +323,24 @@
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
+        });
+
+        // GSAP animations
+        gsap.from('.card', {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            stagger: 0.3,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.button', {
+            duration: 0.8,
+            scale: 0,
+            opacity: 0,
+            stagger: 0.2,
+            ease: 'back.out(1.7)',
+            delay: 1
         });
     </script>
 </body>
