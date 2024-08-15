@@ -27,126 +27,128 @@ function pingServer() {
     https.get('https://morse-w4z7.onrender.com', (resp) => {
         console.log('Ping successful');
     }).on('error', (err) => {
-        console.log('Ping failed: ' + err.message);
+        console.error('Ping failed:', err.message);
     });
 }
 
-// Ping every 14 minutes
 setInterval(pingServer, 14 * 60 * 1000);
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     try {
+        const commands = [
+            {
+                name: 'ping',
+                description: 'Show bot latency'
+            },
+            {
+                name: 'help',
+                description: 'Show all available commands'
+            },
+            {
+                name: 'botinfo',
+                description: 'Show information about the bot'
+            },
+            {
+                name: 'qr',
+                description: 'Generate a QR code',
+                options: [
+                    {
+                        name: 'type',
+                        type: ApplicationCommandOptionType.String,
+                        description: 'Type of content (upi, paypal, or other)',
+                        required: true,
+                        choices: [
+                            { name: 'UPI', value: 'upi' },
+                            { name: 'PayPal', value: 'paypal' },
+                            { name: 'Other', value: 'other' }
+                        ]
+                    },
+                    {
+                        name: 'content',
+                        type: ApplicationCommandOptionType.String,
+                        description: 'The content to encode in the QR code',
+                        required: true
+                    }
+                ]
+            },
+            {
+                name: 'coin-flip',
+                description: 'Flip a coin'
+            },
+            {
+                name: 'roll',
+                description: 'Roll a die',
+                options: [
+                    {
+                        name: 'sides',
+                        type: ApplicationCommandOptionType.Integer,
+                        description: 'Number of sides on the die',
+                        required: true
+                    }
+                ]
+            },
+            {
+                name: 'morse',
+                description: 'Convert text to Morse code',
+                options: [
+                    {
+                        name: 'text',
+                        type: ApplicationCommandOptionType.String,
+                        description: 'The text to convert to Morse code',
+                        required: true
+                    }
+                ]
+            },
+            {
+                name: 'demorse',
+                description: 'Convert Morse code to text',
+                options: [
+                    {
+                        name: 'morse',
+                        type: ApplicationCommandOptionType.String,
+                        description: 'The Morse code to convert to text',
+                        required: true
+                    }
+                ]
+            },
+            {
+                name: 'ligmorse',
+                description: 'Show Morse code with a visual display',
+                options: [
+                    {
+                        name: 'input',
+                        type: ApplicationCommandOptionType.String,
+                        description: 'Text or Morse code to display',
+                        required: true
+                    }
+                ]
+            },
+            {
+                name: 'smorse',
+                description: 'Play Morse code audio',
+                options: [
+                    {
+                        name: 'input',
+                        type: ApplicationCommandOptionType.String,
+                        description: 'Text or Morse code to play',
+                        required: true
+                    }
+                ]
+            },
+            {
+                name: 'learn',
+                description: 'Learn Morse code'
+            }
+        ];
+
         const rest = new REST({ version: '9' }).setToken(client.token);
         await rest.put(
             Routes.applicationCommands(client.user.id),
-            { body: [
-                {
-                    name: 'ping',
-                    description: 'Show bot latency'
-                },
-                {
-                    name: 'help',
-                    description: 'Show all available commands'
-                },
-                {
-                    name: 'botinfo',
-                    description: 'Show information about the bot'
-                },
-                {
-                    name: 'qr',
-                    description: 'Generate a QR code',
-                    options: [
-                        {
-                            name: 'type',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'Type of content (upi, paypal, or other)',
-                            required: true,
-                            choices: [
-                                { name: 'UPI', value: 'upi' },
-                                { name: 'PayPal', value: 'paypal' },
-                                { name: 'Other', value: 'other' }
-                            ]
-                        },
-                        {
-                            name: 'content',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'The content to encode in the QR code',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'coin-flip',
-                    description: 'Flip a coin'
-                },
-                {
-                    name: 'roll',
-                    description: 'Roll a die',
-                    options: [
-                        {
-                            name: 'sides',
-                            type: ApplicationCommandOptionType.Integer,
-                            description: 'Number of sides on the die',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'morse',
-                    description: 'Convert text to Morse code',
-                    options: [
-                        {
-                            name: 'text',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'The text to convert to Morse code',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'demorse',
-                    description: 'Convert Morse code to text',
-                    options: [
-                        {
-                            name: 'morse',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'The Morse code to convert to text',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'ligmorse',
-                    description: 'Show Morse code with a visual display',
-                    options: [
-                        {
-                            name: 'input',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'Text or Morse code to display',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'smorse',
-                    description: 'Play Morse code audio',
-                    options: [
-                        {
-                            name: 'input',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'Text or Morse code to play',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'learn',
-                    description: 'Learn Morse code'
-                }
-            ] },
+            { body: commands },
         );
+        console.log('Successfully registered application commands.');
     } catch (error) {
         console.error('Error registering slash commands:', error);
     }
@@ -162,7 +164,6 @@ client.on('interactionCreate', async interaction => {
 
     const command = interaction.commandName;
 
-    // Defer the reply for all commands
     await interaction.deferReply();
 
     try {
@@ -201,7 +202,7 @@ client.on('interactionCreate', async interaction => {
                 await handleLearn(interaction);
                 break;
             default:
-                await interaction.reply('Unknown command');
+                await interaction.editReply('Unknown command');
         }
     } catch (error) {
         console.error(`Error executing command ${command}:`, error);
@@ -214,7 +215,6 @@ function isMorseCode(input) {
 }
 
 async function handlePing(interaction) {
-    await interaction.deferReply();
     const sent = await interaction.fetchReply();
 
     const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
@@ -237,7 +237,7 @@ async function handleHelp(interaction) {
         .setTitle('Available Commands')
         .addFields(
             { name: '/ping', value: 'Show bot latency', inline: true },
-            {name: '/botinfo', value: 'Show Bot Info', inline: false},
+            { name: '/botinfo', value: 'Show Bot Info', inline: false },
             { name: '/help', value: 'Show all available commands', inline: true },
             { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
             { name: '/morse [text]', value: 'Convert text to Morse code', inline: false },
@@ -357,8 +357,6 @@ async function handleMorse(interaction) {
 }
 
 async function handleDemorse(interaction) {
-    await interaction.deferReply(); // Defer the reply to prevent timeout
-
     const morse = interaction.options.getString('morse');
     const decodedText = morseToText(morse);
 
@@ -375,7 +373,6 @@ async function handleDemorse(interaction) {
 }
 
 async function handleLightMorse(interaction) {
-    await interaction.deferReply();
     const input = interaction.options.getString('input');
     if (!input) {
         await interaction.editReply('Please provide input text or Morse code.');
@@ -393,7 +390,6 @@ async function handleLightMorse(interaction) {
 }
 
 async function handleSoundMorse(interaction) {
-    await interaction.deferReply();
     const input = interaction.options.getString('input');
     if (!input) {
         await interaction.editReply('Please provide input text or Morse code.');
@@ -498,9 +494,9 @@ async function createMorseGif(morseCode) {
         stream.on('error', reject);
 
         encoder.start();
-        encoder.setRepeat(0); // 0 for repeat, -1 for no-repeat
-        encoder.setDelay(200); // frame delay in ms
-        encoder.setQuality(10); // image quality, lower is better
+        encoder.setRepeat(0);
+        encoder.setDelay(200);
+        encoder.setQuality(10);
 
         const frames = morseCode.split('').flatMap(char => {
             if (char === '.' || char === '-') {
@@ -531,7 +527,7 @@ async function createMorseGif(morseCode) {
 }
 
 async function createMorseAudio(morseCode) {
-    const dotLength = 50; // Shorter dot length
+    const dotLength = 50;
     const dashLength = dotLength * 3;
     const pauseLength = dotLength;
     const letterPauseLength = dotLength * 3;
