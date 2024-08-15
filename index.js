@@ -198,6 +198,10 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+function isMorseCode(input) {
+    return /^[.-\s/]+$/.test(input);
+}
+
 async function handlePing(interaction) {
     await interaction.deferReply();
     const sent = await interaction.fetchReply();
@@ -329,6 +333,10 @@ async function handleDemorse(interaction) {
 async function handleLightMorse(interaction) {
     await interaction.deferReply();
     const input = interaction.options.getString('input');
+    if (!input) {
+        await interaction.editReply('Please provide input text or Morse code.');
+        return;
+    }
     const morseCode = isMorseCode(input) ? input : textToMorse(input);
     const gifBuffer = await createMorseGif(morseCode);
     if (!gifBuffer) {
@@ -343,6 +351,10 @@ async function handleLightMorse(interaction) {
 async function handleSoundMorse(interaction) {
     await interaction.deferReply();
     const input = interaction.options.getString('input');
+    if (!input) {
+        await interaction.editReply('Please provide input text or Morse code.');
+        return;
+    }
     const morseCode = isMorseCode(input) ? input : textToMorse(input);
     const audioBuffer = await createMorseAudio(morseCode);
     if (!audioBuffer) {
