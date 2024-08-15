@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Morse Bot - Your Ultimate Discord Companion</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
@@ -92,7 +92,6 @@
             padding: 30px;
             text-align: center;
             width: 100%;
-            max-width: 500px;
             backdrop-filter: blur(10px);
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
@@ -112,6 +111,28 @@
             color: var(--text-color);
             margin: 15px 0;
             line-height: 1.6;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card li {
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: rgba(114, 137, 218, 0.2);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card li:hover {
+            background-color: rgba(114, 137, 218, 0.4);
+            transform: scale(1.05);
         }
 
         .buttons {
@@ -169,7 +190,6 @@
             flex-wrap: wrap;
             justify-content: space-around;
             margin-top: 30px;
-            width: 100%;
         }
 
         .feature {
@@ -216,24 +236,33 @@
             .card {
                 padding: 20px;
             }
+            .card h2 {
+                font-size: 20px;
+            }
+            .card p {
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 480px) {
-            .card {
-                max-width: 90%;
-                margin: 20px auto;
-                padding: 15px;
-            }
             .feature {
                 flex-basis: 100%;
             }
-            .buttons {
-                flex-direction: column;
-                align-items: center;
+            .container {
+                padding: 10px;
+            }
+            .card {
+                padding: 15px;
+            }
+            .card h2 {
+                font-size: 18px;
+            }
+            .card p {
+                font-size: 13px;
             }
             .button {
-                width: 80%;
-                margin: 10px 0;
+                padding: 8px 16px;
+                font-size: 12px;
             }
         }
     </style>
@@ -260,19 +289,37 @@
                     <p>Enjoy a variety of fun and useful commands to keep your server engaged.</p>
                 </div>
                 <div class="feature">
-                    <i class="fas fa-music"></i>
-                    <h3>Sound Features</h3>
-                    <p>Play Morse code audio or add background tunes to your server activities.</p>
+                    <i class="fas fa-bolt"></i>
+                    <h3>Lightning Fast</h3>
+                    <p>Experience quick response times and smooth performance.</p>
                 </div>
             </div>
-            <div class="buttons">
-                <a href="#" class="button"><i class="fas fa-sign-in-alt"></i> Get Started</a>
-                <a href="#" class="button"><i class="fas fa-info-circle"></i> Learn More</a>
-            </div>
+        </div>
+        <div class="card">
+            <h2>Powerful Commands at Your Fingertips</h2>
+            <ul>
+                <li>/help</li>
+                <li>/ping</li>
+                <li>/roll</li>
+                <li>/coin-flip</li>
+                <li>/qr</li>
+                <li>/morse</li>
+                <li>/ligmorse</li>
+                <li>/smorse</li>
+                <li>/demorse</li>
+            </ul>
+            <p>Discover the magic of /morse with its three amazing features: Copy Morse, Light Morse, and Sound Morse. Add Morse Bot to your server and impress your friends!</p>
+        </div>
+        <div class="buttons">
+            <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot" class="button" target="_blank"><i class="fab fa-discord"></i>Invite Bot</a>
+            <a href="https://github.com/jagath-sajjan" class="button" target="_blank"><i class="fab fa-github"></i>Bot Creator</a>
+            <a href="https://youtube.com/@nobooklad" class="button" target="_blank"><i class="fab fa-youtube"></i>YouTube</a>
+            <a href="https://top.gg/bot/1270040432427925677" class="button" target="_blank"><i class="fas fa-star"></i>Vote Bot</a>
         </div>
     </div>
 
     <script>
+        // Three.js animation
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true });
