@@ -50,10 +50,6 @@ client.on('ready', async () => {
                     description: 'Show all available commands'
                 },
                 {
-                    name: 'botinfo',
-                    description: 'Show information about the bot'
-                },
-                {
                     name: 'qr',
                     description: 'Generate a QR code',
                     options: [
@@ -143,6 +139,10 @@ client.on('ready', async () => {
                 {
                     name: 'learn',
                     description: 'Learn Morse code'
+                },
+                {
+                    name: 'botinfo',
+                    description: 'Show information about the bot'
                 }
             ] },
         );
@@ -162,6 +162,8 @@ client.on('interactionCreate', async interaction => {
     const command = interaction.commandName;
 
     try {
+        await interaction.deferReply();
+
         switch (command) {
             case 'ping':
                 await handlePing(interaction);
@@ -169,9 +171,6 @@ client.on('interactionCreate', async interaction => {
             case 'help':
                 await handleHelp(interaction);
                 break;
-            case 'botinfo':
-                await handleBotInfo(interaction);
-                break;    
             case 'qr':
                 await handleQR(interaction);
                 break;
@@ -196,12 +195,19 @@ client.on('interactionCreate', async interaction => {
             case 'learn':
                 await handleLearn(interaction);
                 break;
+            case 'botinfo':
+                await handleBotInfo(interaction);
+                break;
             default:
-                await interaction.reply('Unknown command');
+                await interaction.editReply('Unknown command');
         }
     } catch (error) {
         console.error(`Error executing command ${command}:`, error);
-        await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
+        try {
+            await interaction.editReply({ content: 'An error occurred while processing your request.', ephemeral: true });
+        } catch (replyError) {
+            console.error('Error sending error message:', replyError);
+        }
     }
 });
 
@@ -251,7 +257,7 @@ async function handleHelp(interaction) {
 async function handleBotInfo(interaction) {
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
-        .setTitle('Morse Bot Information')
+        .setTitle('Bot Information')
         .setThumbnail('https://i.ibb.co/kQd588T/image.png')
         .addFields(
             { name: 'Bot Name', value: 'Morse', inline: true },
@@ -272,12 +278,12 @@ async function handleBotInfo(interaction) {
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://discord.gg/c4WEUgRDT4'),
             new ButtonBuilder()
-                .setLabel('Buy Me a Coffee')
+                .setLabel('Buy Me Coffee')
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://buymeacoffee.com/jagathsajjan')
         );
 
-    await interaction.reply({ embeds: [embed], components: [row] });
+    await interaction.editReply({ embeds: [embed], components: [row] });
 }
 
 async function handleQR(interaction) {
