@@ -1,3 +1,8 @@
+if (typeof globalThis.ReadableStream === 'undefined') {
+    const { ReadableStream } = require('stream/web');
+    globalThis.ReadableStream = ReadableStream;
+}
+
 const { Client, GatewayIntentBits, EmbedBuilder, ApplicationCommandOptionType, AttachmentBuilder, REST } = require('discord.js');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
