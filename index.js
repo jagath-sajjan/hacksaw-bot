@@ -4,6 +4,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
 }
 
 const { Client, GatewayIntentBits, EmbedBuilder, ApplicationCommandOptionType, AttachmentBuilder, REST } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
 const { Routes } = require('discord-api-types/v9');
@@ -48,6 +49,10 @@ client.on('ready', async () => {
                 {
                     name: 'help',
                     description: 'Show all available commands'
+                },
+                {
+                    name: 'botinfo',
+                    description: 'Show information about the bot'
                 },
                 {
                     name: 'qr',
@@ -139,10 +144,6 @@ client.on('ready', async () => {
                 {
                     name: 'learn',
                     description: 'Learn Morse code'
-                },
-                {
-                    name: 'botinfo',
-                    description: 'Show information about the bot'
                 }
             ] },
         );
@@ -162,11 +163,6 @@ client.on('interactionCreate', async interaction => {
     const command = interaction.commandName;
 
     try {
-        // Only defer the reply for commands that might take longer
-        if (['qr', 'ligmorse', 'smorse'].includes(command)) {
-            await interaction.deferReply();
-        }
-
         switch (command) {
             case 'ping':
                 await handlePing(interaction);
@@ -174,6 +170,9 @@ client.on('interactionCreate', async interaction => {
             case 'help':
                 await handleHelp(interaction);
                 break;
+            case 'botinfo':
+                await handleBotInfo(interaction);
+                break;    
             case 'qr':
                 await handleQR(interaction);
                 break;
@@ -198,20 +197,12 @@ client.on('interactionCreate', async interaction => {
             case 'learn':
                 await handleLearn(interaction);
                 break;
-            case 'botinfo':
-                await handleBotInfo(interaction);
-                break;
             default:
                 await interaction.reply('Unknown command');
         }
     } catch (error) {
         console.error(`Error executing command ${command}:`, error);
-        const errorMessage = `An error occurred while processing the '${command}' command: ${error.message}`;
-        if (interaction.deferred) {
-            await interaction.editReply({ content: errorMessage, ephemeral: true });
-        } else {
-            await interaction.reply({ content: errorMessage, ephemeral: true });
-        }
+        await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
     }
 });
 
@@ -261,7 +252,7 @@ async function handleHelp(interaction) {
 async function handleBotInfo(interaction) {
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
-        .setTitle('Bot Information')
+        .setTitle('Morse Bot Information')
         .setThumbnail('https://i.ibb.co/kQd588T/image.png')
         .addFields(
             { name: 'Bot Name', value: 'Morse', inline: true },
