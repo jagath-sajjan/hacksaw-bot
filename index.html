@@ -92,6 +92,7 @@
             padding: 30px;
             text-align: center;
             width: 100%;
+            max-width: 500px; /* Add max-width to center */
             backdrop-filter: blur(10px);
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
@@ -190,6 +191,7 @@
             flex-wrap: wrap;
             justify-content: space-around;
             margin-top: 30px;
+            width: 100%;
         }
 
         .feature {
@@ -236,6 +238,10 @@
         }
 
         @media (max-width: 480px) {
+            .card {
+                max-width: 90%; /* Makes cards responsive */
+                margin: 20px auto;
+            }
             .feature {
                 flex-basis: 100%;
             }
@@ -264,38 +270,20 @@
                     <p>Enjoy a variety of fun and useful commands to keep your server engaged.</p>
                 </div>
                 <div class="feature">
-                    <i class="fas fa-bolt"></i>
-                    <h3>Lightning Fast</h3>
-                    <p>Experience quick response times and smooth performance.</p>
+                    <i class="fas fa-music"></i>
+                    <h3>Sound Features</h3>
+                    <p>Play Morse code audio or add background tunes to your server activities.</p>
                 </div>
             </div>
-        </div>
-        <div class="card">
-            <h2>Powerful Commands at Your Fingertips</h2>
-            <ul>
-                <li>/help</li>
-                <li>/ping</li>
-                <li>/roll</li>
-                <li>/coin-flip</li>
-                <li>/qr</li>
-                <li>/morse</li>
-                <li>/ligmorse</li>
-                <li>/smorse</li>
-                <li>/demorse</li>
-            </ul>
-            <p>Discover the magic of /morse with its three amazing features: Copy Morse, Light Morse, and Sound Morse. Add Morse Bot to your server and impress your friends!</p>
-        </div>
-        <div class="buttons">
-            <a href="https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot" class="button" target="_blank"><i class="fab fa-discord"></i>Invite Bot</a>
-            <a href="https://github.com/jagath-sajjan" class="button" target="_blank"><i class="fab fa-github"></i>Bot Creator</a>
-            <a href="https://youtube.com/@nobooklad" class="button" target="_blank"><i class="fab fa-youtube"></i>YouTube</a>
-            <a href="https://top.gg/bot/1270040432427925677" class="button" target="_blank"><i class="fas fa-star"></i>Vote Bot</a>
+            <div class="buttons">
+                <a href="#" class="button"><i class="fas fa-sign-in-alt"></i> Get Started</a>
+                <a href="#" class="button"><i class="fas fa-info-circle"></i> Learn More</a>
+            </div>
         </div>
     </div>
 
     <script>
-        // Three.js animation
-        const scene = new THREE.Scene();
+         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
