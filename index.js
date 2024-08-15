@@ -50,6 +50,10 @@ client.on('ready', async () => {
                     description: 'Show all available commands'
                 },
                 {
+                    name: 'botinfo',
+                    description: 'Show information about the bot'
+                },
+                {
                     name: 'qr',
                     description: 'Generate a QR code',
                     options: [
@@ -165,6 +169,9 @@ client.on('interactionCreate', async interaction => {
             case 'help':
                 await handleHelp(interaction);
                 break;
+            case 'botinfo':
+                await handleBotInfo(interaction);
+                break;    
             case 'qr':
                 await handleQR(interaction);
                 break;
@@ -239,6 +246,38 @@ async function handleHelp(interaction) {
         .setColor('Green')
         .setFooter({ text: footerText });
     await interaction.reply({ embeds: [embed] });
+}
+
+async function handleBotInfo(interaction) {
+    const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle('Morse Bot Information')
+        .setThumbnail('https://i.ibb.co/kQd588T/image.png')
+        .addFields(
+            { name: 'Bot Name', value: 'Morse', inline: true },
+            { name: 'Language', value: 'Javascript', inline: true },
+            { name: 'Hosted On', value: 'Raspberry Pi 3 [Banglore/IN]', inline: true },
+            { name: 'Creator', value: '[GitHub](https://github.com/jagath-sajjan) | [YouTube](https://youtube.com/@nobooklad)', inline: false }
+        )
+        .setFooter({ text: footerText });
+
+    const row = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setLabel('Invite')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot'),
+            new ButtonBuilder()
+                .setLabel('Support')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://discord.gg/c4WEUgRDT4'),
+            new ButtonBuilder()
+                .setLabel('Buy Me a Coffee')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://buymeacoffee.com/jagathsajjan')
+        );
+
+    await interaction.reply({ embeds: [embed], components: [row] });
 }
 
 async function handleQR(interaction) {
