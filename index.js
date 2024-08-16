@@ -296,20 +296,25 @@ async function handleBotInfo(interaction) {
 
 async function handleQR(interaction) {
     await interaction.deferReply();
-    const type = interaction.options.getString('type');
-    const content = interaction.options.getString('content');
-    const qrAttachment = await generateQRCode(type, content);
-    if (qrAttachment) {
-        const embed = new EmbedBuilder()
-            .setTitle(`Generated QR Code (${type.toUpperCase()})`)
-            .setDescription(`Content: ${content}`)
-            .setImage('attachment://qrcode.png')
-            .setColor('Blue')
-            .setFooter({ text: footerText });
+    try {
+        const type = interaction.options.getString('type');
+        const content = interaction.options.getString('content');
+        const qrAttachment = await generateQRCode(type, content);
+        if (qrAttachment) {
+            const embed = new EmbedBuilder()
+                .setTitle(`Generated QR Code (${type.toUpperCase()})`)
+                .setDescription(`Content: ${content}`)
+                .setImage('attachment://qrcode.png')
+                .setColor('Blue')
+                .setFooter({ text: footerText });
 
-        await interaction.editReply({ embeds: [embed], files: [qrAttachment] });
-    } else {
-        await interaction.editReply('Sorry, there was an error generating the QR code. Please try again.');
+            await interaction.editReply({ embeds: [embed], files: [qrAttachment] });
+        } else {
+            await interaction.editReply('Sorry, there was an error generating the QR code. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error in handleQR:', error);
+        await interaction.editReply('An error occurred while processing your request.');
     }
 }
 
