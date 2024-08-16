@@ -15,6 +15,7 @@ const {
     ButtonStyle
 } = require('discord.js');
 
+const { exec } = require('node:child_process');
 const crypto = require('crypto');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
@@ -395,6 +396,7 @@ async function handleHelp(interaction) {
             .setTitle('Available Commands')
             .addFields(
                 { name: '/ping', value: 'Show bot latency', inline: true },
+                { name: '/ip [ip-adress]', value: 'Find Info Abt The IP', inline: false},
                 { name: '/botinfo', value: 'Show Bot Info', inline: false },
                 { name: '/help', value: 'Show all available commands', inline: true },
                 { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
