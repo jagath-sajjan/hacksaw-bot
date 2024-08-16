@@ -3,162 +3,18 @@ if (typeof globalThis.ReadableStream === 'undefined') {
     globalThis.ReadableStream = ReadableStream;
 }
 
-const { Client, GatewayIntentBits, EmbedBuilder, ApplicationCommandOptionType, AttachmentBuilder, REST } = require('discord.js');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const GIFEncoder = require('gifencoder');
-const { createCanvas } = require('canvas');
-const { Routes } = require('discord-api-types/v9');
-const QRCode = require('qrcode');
-const express = require('express');
-const https = require('https');
-const path = require('path');
+const { 
+    Client, 
+    GatewayIntentBits, 
+    EmbedBuilder, 
+    ApplicationCommandOptionType, 
+    AttachmentBuilder, 
+    REST,
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle
+} = require('discord.js');
 
-const footerText = 'Made By Jagath🩵';
-
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-    ],
-});
-
-function pingServer() {
-    https.get('https://morse-w4z7.onrender.com', (resp) => {
-        console.log('Ping successful');
-    }).on('error', (err) => {
-        console.log('Ping failed: ' + err.message);
-    });
-}
-
-// Ping every 14 minutes
-setInterval(pingServer, 14 * 60 * 1000);
-
-client.on('ready', async () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-
-    try {
-        const rest = new REST({ version: '9' }).setToken(client.token);
-        await rest.put(
-            Routes.applicationCommands(client.user.id),
-            { body: [
-                {
-                    name: 'ping',
-                    description: 'Show bot latency'
-                },
-                {
-                    name: 'help',
-                    description: 'Show all available commands'
-                },
-                {
-                    name: 'botinfo',
-                    description: 'Show information about the bot'
-                },
-                {
-                    name: 'qr',
-                    description: 'Generate a QR code',
-                    options: [
-                        {
-                            name: 'type',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'Type of content (upi, paypal, or other)',
-                            required: true,
-                            choices: [
-                                { name: 'UPI', value: 'upi' },
-                                { name: 'PayPal', value: 'paypal' },
-                                { name: 'Other', value: 'other' }
-                            ]
-                        },
-                        {
-                            name: 'content',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'The content to encode in the QR code',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'coin-flip',
-                    description: 'Flip a coin'
-                },
-                {
-                    name: 'roll',
-                    description: 'Roll a die',
-                    options: [
-                        {
-                            name: 'sides',
-                            type: ApplicationCommandOptionType.Integer,
-                            description: 'Number of sides on the die',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'morse',
-                    description: 'Convert text to Morse code',
-                    options: [
-                        {
-                            name: 'text',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'The text to convert to Morse code',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'demorse',
-                    description: 'Convert Morse code to text',
-                    options: [
-                        {
-                            name: 'morse',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'The Morse code to convert to text',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'ligmorse',
-                    description: 'Show Morse code with a visual display',
-                    options: [
-                        {
-                            name: 'input',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'Text or Morse code to display',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'smorse',
-                    description: 'Play Morse code audio',
-                    options: [
-                        {
-                            name: 'input',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'Text or Morse code to play',
-                            required: true
-                        }
-                    ]
-                },
-                {
-                    name: 'learn',
-                    description: 'Learn Morse code'
-                }
-            ] },
-        );
-    } catch (error) {
-        console.error('Error registering slash commands:', error);
-    }
-});
-
-if (typeof globalThis.ReadableStream === 'undefined') {
-    const { ReadableStream } = require('stream/web');
-    globalThis.ReadableStream = ReadableStream;
-}
-
-const { Client, GatewayIntentBits, EmbedBuilder, ApplicationCommandOptionType, AttachmentBuilder, REST } = require('discord.js');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
 const { Routes } = require('discord-api-types/v9');
