@@ -22,7 +22,6 @@ const QRCode = require('qrcode');
 const express = require('express');
 const https = require('https');
 const path = require('path');
-const fetch = require('node-fetch');
 
 const footerText = 'Made By Jagath🩵';
 
@@ -33,9 +32,6 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
     ],
 });
-
-const API_KEY = '54335ee630574a16988dd1a1232602e7';
-const API_URL = 'https://aimlapi.com/api/chat';
 
 function pingServer() {
     https.get('https://morse-w4z7.onrender.com', (resp) => {
@@ -158,18 +154,6 @@ client.on('ready', async () => {
                 {
                     name: 'learn',
                     description: 'Learn Morse code'
-                },
-                {
-                    name: 'ask',
-                    description: 'Ask the AI a question',
-                    options: [
-                        {
-                            name: 'text',
-                            type: ApplicationCommandOptionType.String,
-                            description: 'The question or prompt for the AI',
-                            required: true
-                        }
-                    ]
                 }
             ] },
         );
@@ -223,9 +207,6 @@ client.on('interactionCreate', async interaction => {
             case 'learn':
                 await handleLearn(interaction);
                 break;
-            case 'ask':
-                await handleAsk(interaction);
-                break;
             default:
                 await interaction.reply('Unknown command');
         }
@@ -238,48 +219,6 @@ client.on('interactionCreate', async interaction => {
         }
     }
 });
-
-client.on('messageCreate', async (message) => {
-    if (message.mentions.has(client.user) && !message.author.bot) {
-        const prompt = message.content.replace(`<@!${client.user.id}>`, '').trim();
-        const response = await getAIResponse(prompt);
-        await message.reply(response);
-    }
-});
-
-async function getAIResponse(prompt) {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                prompt: prompt,
-                max_tokens: 300,
-                temperature: 0.7
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.choices[0].text.trim();
-    } catch (error) {
-        console.error('Error getting AI response:', error);
-        return 'Sorry, I encountered an error while processing your request.';
-    }
-}
-
-async function handleAsk(interaction) {
-    await interaction.deferReply();
-    const prompt = interaction.options.getString('text');
-    const response = await getAIResponse(prompt);
-    await interaction.editReply(response);
-}
 
 function isMorseCode(input) {
     return /^[.-\s/]+$/.test(input);
