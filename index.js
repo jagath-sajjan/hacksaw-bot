@@ -49,6 +49,7 @@ setInterval(pingServer, 14 * 60 * 1000);
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    client.user.setStatus('idle');
 
     try {
         const rest = new REST({ version: '9' }).setToken(client.token);
@@ -589,7 +590,7 @@ async function handleLightMorse(interaction) {
         }
         const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
 
-        await interaction.editReply({ content: `Here is a visual display of Morse code for: ${input}`, files: [attachment] });
+        await interaction.editReply({ content: `**Here is a visual display of Morse code for:** ${input}`, files: [attachment] });
     } catch (error) {
         console.error('Error in handleLightMorse:', error);
         await interaction.editReply('An error occurred while generating the Morse code visual.');
@@ -612,7 +613,7 @@ async function handleSoundMorse(interaction) {
         }
         const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
 
-        await interaction.editReply({ content: `Here is the audio for the Morse code of: ${input}`, files: [attachment] });
+        await interaction.editReply({ content: `**Here is the audio for the Morse code of:** ${input}`, files: [attachment] });
     } catch (error) {
         console.error('Error in handleSoundMorse:', error);
         await interaction.editReply('An error occurred while generating the Morse code audio.');
