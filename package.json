@@ -1,7 +1,7 @@
 {
   "name": "morse-bot",
   "version": "1.0.0",
-  "description": "Morse Discord Bot",
+  "description": "Morse Discord Bot with AI capabilities",
   "main": "index.js",
   "engines": {
     "node": ">=16.14.0"
@@ -14,6 +14,7 @@
     "express": "^4.18.2",
     "gifencoder": "^2.0.1",
     "canvas": "^2.11.2",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "@anthropic-ai/sdk": "^0.4.3"
   }
 }
