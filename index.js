@@ -22,6 +22,7 @@ const QRCode = require('qrcode');
 const express = require('express');
 const https = require('https');
 const path = require('path');
+const fetch = require('node-fetch');
 
 const footerText = 'Made By Jagath🩵';
 
@@ -154,6 +155,18 @@ client.on('ready', async () => {
                 {
                     name: 'learn',
                     description: 'Learn Morse code'
+                },
+                {
+                    name: 'ip',
+                    description: 'Fetch information about a given IP address',
+                    options: [
+                        {
+                            name: 'address',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The IP address to look up',
+                            required: true
+                        }
+                    ]
                 }
             ] },
         );
@@ -207,6 +220,9 @@ client.on('interactionCreate', async interaction => {
             case 'learn':
                 await handleLearn(interaction);
                 break;
+            case 'ip':
+                await handleIPLookup(interaction);
+                break;
             default:
                 await interaction.reply('Unknown command');
         }
@@ -219,6 +235,42 @@ client.on('interactionCreate', async interaction => {
         }
     }
 });
+
+// ... (all other functions remain the same)
+
+async function handleIPLookup(interaction) {
+    await interaction.deferReply();
+    try {
+        const ipAddress = interaction.options.getString('address');
+        const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+        const data = await response.json();
+
+        if (!data.error) {
+            const embed = new EmbedBuilder()
+                .setTitle(`IP Information: ${ipAddress}`)
+                .addFields(
+                    { name: 'Country', value: data.country_name || 'N/A', inline: true },
+                    { name: 'Region', value: data.region || 'N/A', inline: true },
+                    { name: 'City', value: data.city || 'N/A', inline: true },
+                    { name: 'ZIP', value: data.postal || 'N/A', inline: true },
+                    { name: 'Latitude', value: data.latitude?.toString() || 'N/A', inline: true },
+                    { name: 'Longitude', value: data.longitude?.toString() || 'N/A', inline: true },
+                    { name: 'ISP', value: data.org || 'N/A', inline: true },
+                    { name: 'ASN', value: data.asn || 'N/A', inline: true },
+                    { name: 'Timezone', value: data.timezone || 'N/A', inline: true }
+                )
+                .setColor('Blue')
+                .setFooter({ text: footerText });
+
+            await interaction.editReply({ embeds: [embed] });
+        } else {
+            await interaction.editReply(`Failed to fetch information for IP: ${ipAddress}. Error: ${data.reason}`);
+        }
+    } catch (error) {
+        console.error('Error in handleIPLookup:', error);
+        await interaction.editReply('An error occurred while fetching IP information.');
+    }
+}
 
 function isMorseCode(input) {
     return /^[.-\s/]+$/.test(input);
