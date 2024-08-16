@@ -47,7 +47,7 @@ function pingServer() {
 // Ping every 14 minutes
 setInterval(pingServer, 14 * 60 * 1000);
 
-cclient.on('ready', async () => {
+client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     // Set bot status to idle
