@@ -15,6 +15,7 @@ const {
     ButtonStyle
 } = require('discord.js');
 
+const crypto = require('crypto');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
 const { Routes } = require('discord-api-types/v9');
@@ -167,9 +168,46 @@ client.on('ready', async () => {
                             required: true
                         }
                     ]
+                },
+                {
+                    name: 'pass-gen',
+                    description: 'Generate a secure random password',
+                    options: [
+                        {
+                            name: 'length',
+                            type: ApplicationCommandOptionType.Integer,
+                            description: 'Length of the password (default: 12, min: 8, max: 128)',
+                            required: false,
+                        },
+                        {
+                            name: 'uppercase',
+                            type: ApplicationCommandOptionType.Boolean,
+                            description: 'Include uppercase letters (default: true)',
+                            required: false,
+                        },
+                        {
+                            name: 'lowercase',
+                            type: ApplicationCommandOptionType.Boolean,
+                            description: 'Include lowercase letters (default: true)',
+                            required: false,
+                        },
+                        {
+                            name: 'numbers',
+                            type: ApplicationCommandOptionType.Boolean,
+                            description: 'Include numbers (default: true)',
+                            required: false,
+                        },
+                        {
+                            name: 'symbols',
+                            type: ApplicationCommandOptionType.Boolean,
+                            description: 'Include symbols (default: true)',
+                            required: false,
+                        }
+                    ]
                 }
             ] },
         );
+        console.log('Successfully registered application commands.');
     } catch (error) {
         console.error('Error registering slash commands:', error);
     }
@@ -223,6 +261,9 @@ client.on('interactionCreate', async interaction => {
             case 'ip':
                 await handleIPLookup(interaction);
                 break;
+            case 'pass-gen':
+                await handlePasswordGeneration(interaction);
+                break;    
             default:
                 await interaction.reply('Unknown command');
         }
@@ -236,7 +277,54 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// ... (all other functions remain the same)
+async function handlePasswordGeneration(interaction) {
+    await interaction.deferReply({ ephemeral: true });
+    try {
+        const length = interaction.options.getInteger('length') || 12;
+        const uppercase = interaction.options.getBoolean('uppercase') ?? true;
+        const lowercase = interaction.options.getBoolean('lowercase') ?? true;
+        const numbers = interaction.options.getBoolean('numbers') ?? true;
+        const symbols = interaction.options.getBoolean('symbols') ?? true;
+
+        if (length < 8 || length > 128) {
+            await interaction.editReply('Password length must be between 8 and 128 characters.');
+            return;
+        }
+
+        const password = generatePassword(length, uppercase, lowercase, numbers, symbols);
+
+        const embed = new EmbedBuilder()
+            .setTitle('Password Generator')
+            .setDescription(`Here's your generated password:`)
+            .addFields({ name: 'Password', value: `||${password}||` })
+            .setColor('Green')
+            .setFooter({ text: footerText });
+
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handlePasswordGeneration:', error);
+        await interaction.editReply('An error occurred while generating the password.');
+    }
+}
+
+function generatePassword(length, uppercase, lowercase, numbers, symbols) {
+    let charset = '';
+    if (uppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (lowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+    if (numbers) charset += '0123456789';
+    if (symbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+    if (charset === '') {
+        charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+    }
+
+    let password = '';
+    const randomBytes = crypto.randomBytes(length);
+    for (let i = 0; i < length; i++) {
+        password += charset[randomBytes[i] % charset.length];
+    }
+    return password;
+}
 
 async function handleIPLookup(interaction) {
     await interaction.deferReply();
@@ -316,7 +404,8 @@ async function handleHelp(interaction) {
                 { name: '/smorse', value: 'Play Morse code audio', inline: false },
                 { name: '/coin-flip', value: 'Flip a coin', inline: false },
                 { name: '/roll [sides]', value: 'Roll a die', inline: false },
-                { name: '/learn', value: 'Learn Morse code', inline: false }
+                { name: '/learn', value: 'Learn Morse code', inline: false },
+                { name: '/pass-gen', value: 'Generate a secure random password', inline: false }
             )
             .setColor('Green')
             .setFooter({ text: footerText });
