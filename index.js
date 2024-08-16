@@ -225,73 +225,91 @@ function isMorseCode(input) {
 }
 
 async function handlePing(interaction) {
-    const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
-    const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
-    const wsLatency = interaction.client.ws.ping;
+    await interaction.deferReply();
+    try {
+        const sent = await interaction.fetchReply();
+        const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
+        const wsLatency = interaction.client.ws.ping;
 
-    const embed = new EmbedBuilder()
-        .setTitle('Ping Information')
-        .addFields(
-            { name: 'Roundtrip Latency', value: `${roundtripLatency}ms`, inline: true },
-            { name: 'WebSocket Latency', value: `${wsLatency}ms`, inline: true }
-        )
-        .setColor('Green')
-        .setFooter({ text: footerText });
+        const embed = new EmbedBuilder()
+            .setTitle('Ping Information')
+            .addFields(
+                { name: 'Roundtrip Latency', value: `${roundtripLatency}ms`, inline: true },
+                { name: 'WebSocket Latency', value: `${wsLatency}ms`, inline: true }
+            )
+            .setColor('Green')
+            .setFooter({ text: footerText });
 
-    await interaction.editReply({ content: null, embeds: [embed] });
+        await interaction.editReply({ content: null, embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handlePing:', error);
+        await interaction.editReply('An error occurred while fetching ping information.');
+    }
 }
 
 async function handleHelp(interaction) {
-    const embed = new EmbedBuilder()
-        .setTitle('Available Commands')
-        .addFields(
-            { name: '/ping', value: 'Show bot latency', inline: true },
-            { name: '/botinfo', value: 'Show Bot Info', inline: false },
-            { name: '/help', value: 'Show all available commands', inline: true },
-            { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
-            { name: '/morse [text]', value: 'Convert text to Morse code', inline: false },
-            { name: '/demorse [morse]', value: 'Convert Morse code to text', inline: false },
-            { name: '/ligmorse', value: 'Show Morse code with a visual display', inline: false },
-            { name: '/smorse', value: 'Play Morse code audio', inline: false },
-            { name: '/coin-flip', value: 'Flip a coin', inline: false },
-            { name: '/roll [sides]', value: 'Roll a die', inline: false },
-            { name: '/learn', value: 'Learn Morse code', inline: false }
-        )
-        .setColor('Green')
-        .setFooter({ text: footerText });
-    await interaction.reply({ embeds: [embed] });
+    await interaction.deferReply();
+    try {
+        const embed = new EmbedBuilder()
+            .setTitle('Available Commands')
+            .addFields(
+                { name: '/ping', value: 'Show bot latency', inline: true },
+                { name: '/botinfo', value: 'Show Bot Info', inline: false },
+                { name: '/help', value: 'Show all available commands', inline: true },
+                { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
+                { name: '/morse [text]', value: 'Convert text to Morse code', inline: false },
+                { name: '/demorse [morse]', value: 'Convert Morse code to text', inline: false },
+                { name: '/ligmorse', value: 'Show Morse code with a visual display', inline: false },
+                { name: '/smorse', value: 'Play Morse code audio', inline: false },
+                { name: '/coin-flip', value: 'Flip a coin', inline: false },
+                { name: '/roll [sides]', value: 'Roll a die', inline: false },
+                { name: '/learn', value: 'Learn Morse code', inline: false }
+            )
+            .setColor('Green')
+            .setFooter({ text: footerText });
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handleHelp:', error);
+        await interaction.editReply('An error occurred while fetching the help information.');
+    }
 }
 
 async function handleBotInfo(interaction) {
-    const embed = new EmbedBuilder()
-        .setColor('#0099ff')
-        .setTitle('Morse Bot Information')
-        .setThumbnail('https://i.ibb.co/kQd588T/image.png')
-        .addFields(
-            { name: 'Bot Name', value: 'Morse', inline: true },
-            { name: 'Language', value: 'Javascript', inline: true },
-            { name: 'Hosted On', value: 'Raspberry Pi 3 [Banglore/IN]', inline: true },
-            { name: 'Creator', value: '[GitHub](https://github.com/jagath-sajjan) | [YouTube](https://youtube.com/@nobooklad)', inline: false }
-        )
-        .setFooter({ text: footerText });
+    await interaction.deferReply();
+    try {
+        const embed = new EmbedBuilder()
+            .setColor('#0099ff')
+            .setTitle('Morse Bot Information')
+            .setThumbnail('https://i.ibb.co/kQd588T/image.png')
+            .addFields(
+                { name: 'Bot Name', value: 'Morse', inline: true },
+                { name: 'Language', value: 'Javascript', inline: true },
+                { name: 'Hosted On', value: 'Raspberry Pi 3 [Banglore/IN]', inline: true },
+                { name: 'Creator', value: '[GitHub](https://github.com/jagath-sajjan) | [YouTube](https://youtube.com/@nobooklad)', inline: false }
+            )
+            .setFooter({ text: footerText });
 
-    const row = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setLabel('Invite')
-                .setStyle(ButtonStyle.Link)
-                .setURL('https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot'),
-            new ButtonBuilder()
-                .setLabel('Support')
-                .setStyle(ButtonStyle.Link)
-                .setURL('https://discord.gg/c4WEUgRDT4'),
-            new ButtonBuilder()
-                .setLabel('Buy Me Coffee')
-                .setStyle(ButtonStyle.Link)
-                .setURL('https://buymeacoffee.com/jagathsajjan')
-        );
+        const row = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setLabel('Invite')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL('https://discord.com/oauth2/authorize?client_id=1270040432427925677&permissions=1758118824378192&integration_type=0&scope=applications.commands+bot'),
+                new ButtonBuilder()
+                    .setLabel('Support')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL('https://discord.gg/c4WEUgRDT4'),
+                new ButtonBuilder()
+                    .setLabel('Buy Me Coffee')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL('https://buymeacoffee.com/jagathsajjan')
+            );
 
-    await interaction.reply({ embeds: [embed], components: [row] });
+        await interaction.editReply({ embeds: [embed], components: [row] });
+    } catch (error) {
+        console.error('Error in handleBotInfo:', error);
+        await interaction.editReply('An error occurred while fetching bot information.');
+    }
 }
 
 async function handleQR(interaction) {
@@ -314,7 +332,7 @@ async function handleQR(interaction) {
         }
     } catch (error) {
         console.error('Error in handleQR:', error);
-        await interaction.editReply('An error occurred while processing your request.');
+        await interaction.editReply('An error occurred while generating the QR code.');
     }
 }
 
@@ -341,130 +359,170 @@ async function generateQRCode(type, content) {
 }
 
 async function handleCoinFlip(interaction) {
-    const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
-    await interaction.reply(`The coin landed on: **${result}**`);
+    await interaction.deferReply();
+    try {
+        const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+        await interaction.editReply(`The coin landed on: **${result}**`);
+    } catch (error) {
+        console.error('Error in handleCoinFlip:', error);
+        await interaction.editReply('An error occurred while flipping the coin.');
+    }
 }
 
 async function handleRoll(interaction) {
-    const sides = interaction.options.getInteger('sides');
-    if (sides < 2) {
-        await interaction.reply('A die must have at least 2 sides.');
-        return;
+    await interaction.deferReply();
+    try {
+        const sides = interaction.options.getInteger('sides');
+        if (sides < 2) {
+            await interaction.editReply('A die must have at least 2 sides.');
+            return;
+        }
+        const result = Math.floor(Math.random() * sides) + 1;
+        await interaction.editReply(`You rolled a **${result}** on a ${sides}-sided die.`);
+    } catch (error) {
+        console.error('Error in handleRoll:', error);
+        await interaction.editReply('An error occurred while rolling the die.');
     }
-    const result = Math.floor(Math.random() * sides) + 1;
-    await interaction.reply(`You rolled a **${result}** on a ${sides}-sided die.`);
 }
 
 async function handleMorse(interaction) {
-    const text = interaction.options.getString('text');
-    const morseCode = textToMorse(text);
+    await interaction.deferReply();
+    try {
+        const text = interaction.options.getString('text');
+        const morseCode = textToMorse(text);
 
-    const embed = new EmbedBuilder()
-        .setTitle('Text to Morse Code Conversion')
-        .addFields(
-            { name: 'Original Text', value: text },
-            { name: 'Morse Code', value: morseCode }
-        )
-        .setColor('Blue')
-        .setFooter({ text: footerText });
+        const embed = new EmbedBuilder()
+            .setTitle('Text to Morse Code Conversion')
+            .addFields(
+                { name: 'Original Text', value: text },
+                { name: 'Morse Code', value: morseCode }
+            )
+            .setColor('Blue')
+            .setFooter({ text: footerText });
 
-    await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handleMorse:', error);
+        await interaction.editReply('An error occurred while converting to Morse code.');
+    }
 }
 
 async function handleDemorse(interaction) {
-    const morse = interaction.options.getString('morse');
-    const decodedText = morseToText(morse);
+    await interaction.deferReply();
+    try {
+        const morse = interaction.options.getString('morse');
+        const decodedText = morseToText(morse);
 
-    const embed = new EmbedBuilder()
-        .setTitle('Morse Code to Text Conversion')
-        .addFields(
-            { name: 'Morse Code', value: morse },
-            { name: 'Decoded Text', value: decodedText || 'Unable to decode' }
-        )
-        .setColor('Purple')
-        .setFooter({ text: footerText });
+        const embed = new EmbedBuilder()
+            .setTitle('Morse Code to Text Conversion')
+            .addFields(
+                { name: 'Morse Code', value: morse },
+                { name: 'Decoded Text', value: decodedText || 'Unable to decode' }
+            )
+            .setColor('Purple')
+            .setFooter({ text: footerText });
 
-    await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handleDemorse:', error);
+        await interaction.editReply('An error occurred while converting from Morse code.');
+    }
 }
 
 async function handleLightMorse(interaction) {
     await interaction.deferReply();
-    const input = interaction.options.getString('input');
-    if (!input) {
-        await interaction.editReply('Please provide input text or Morse code.');
-        return;
-    }
-    const morseCode = isMorseCode(input) ? input : textToMorse(input);
-    const gifBuffer = await createMorseGif(morseCode);
-    if (!gifBuffer) {
-        await interaction.editReply('Error generating GIF. Please try again.');
-        return;
-    }
-    const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
+    try {
+        const input = interaction.options.getString('input');
+        if (!input) {
+            await interaction.editReply('Please provide input text or Morse code.');
+            return;
+        }
+        const morseCode = isMorseCode(input) ? input : textToMorse(input);
+        const gifBuffer = await createMorseGif(morseCode);
+        if (!gifBuffer) {
+            await interaction.editReply('Error generating GIF. Please try again.');
+            return;
+        }
+        const attachment = new AttachmentBuilder(gifBuffer, { name: 'morse.gif' });
 
-    await interaction.editReply({ content: `Here is a visual display of Morse code for: ${input}`, files: [attachment] });
+        await interaction.editReply({ content: `Here is a visual display of Morse code for: ${input}`, files: [attachment] });
+    } catch (error) {
+        console.error('Error in handleLightMorse:', error);
+        await interaction.editReply('An error occurred while generating the Morse code visual.');
+    }
 }
 
 async function handleSoundMorse(interaction) {
     await interaction.deferReply();
-    const input = interaction.options.getString('input');
-    if (!input) {
-        await interaction.editReply('Please provide input text or Morse code.');
-        return;
-    }
-    const morseCode = isMorseCode(input) ? input : textToMorse(input);
-    const audioBuffer = await createMorseAudio(morseCode);
-    if (!audioBuffer) {
-        await interaction.editReply('Error generating audio file. Please try again.');
-        return;
-    }
-    const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
+    try {
+        const input = interaction.options.getString('input');
+        if (!input) {
+            await interaction.editReply('Please provide input text or Morse code.');
+            return;
+        }
+        const morseCode = isMorseCode(input) ? input : textToMorse(input);
+        const audioBuffer = await createMorseAudio(morseCode);
+        if (!audioBuffer) {
+            await interaction.editReply('Error generating audio file. Please try again.');
+            return;
+        }
+        const attachment = new AttachmentBuilder(audioBuffer, { name: 'morse.wav' });
 
-    await interaction.editReply({ content: `Here is the audio for the Morse code of: ${input}`, files: [attachment] });
+        await interaction.editReply({ content: `Here is the audio for the Morse code of: ${input}`, files: [attachment] });
+    } catch (error) {
+        console.error('Error in handleSoundMorse:', error);
+        await interaction.editReply('An error occurred while generating the Morse code audio.');
+    }
 }
 
 async function handleLearn(interaction) {
-    const morseCodeMap = {
-        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
-        'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
-        'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
-        'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
-        'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
-        '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
-        '8': '---..', '9': '----.', '.': '.-.-.-', ',': '--..--', '?': '..--..',
-        "'": '.----.', '!': '-.-.--', '/': '-..-.', '(': '-.--.', ')': '-.--.-',
-        '&': '.-...', ':': '---...', ';': '-.-.-.', '=': '-...-', '+': '.-.-.',
-        '-': '-....-', '_': '..--.-', '"': '.-..-.', '$': '...-..-', '@': '.--.-.'
-    };
+    await interaction.deferReply();
+    try {
+        const morseCodeMap = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
+            '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+            '8': '---..', '9': '----.', '.': '.-.-.-', ',': '--..--', '?': '..--..',
+            "'": '.----.', '!': '-.-.--', '/': '-..-.', '(': '-.--.', ')': '-.--.-',
+            '&': '.-...', ':': '---...', ';': '-.-.-.', '=': '-...-', '+': '.-.-.',
+            '-': '-....-', '_': '..--.-', '"': '.-..-.', '$': '...-..-', '@': '.--.-.'
+        };
 
-    const embed = new EmbedBuilder()
-        .setTitle('Morse Code Reference')
-        .setDescription('Here\'s a comprehensive list of Morse code for alphabets, numbers, and common symbols:')
-        .setColor('Green')
-        .setFooter({ text: footerText });
+        const embed = new EmbedBuilder()
+            .setTitle('Morse Code Reference')
+            .setDescription('Here\'s a comprehensive list of Morse code for alphabets, numbers, and common symbols:')
+            .setColor('Green')
+            .setFooter({ text: footerText });
 
-    let alphabets = '';
-    let numbers = '';
-    let symbols = '';
+        let alphabets = '';
+        let numbers = '';
+        let symbols = '';
 
-    for (const [char, code] of Object.entries(morseCodeMap)) {
-        const entry = `**${char}** ➤ *In Morse Is*  〔 **${code}** 〕\n`;
-        if (/[A-Z]/.test(char)) {
-            alphabets += entry;
-        } else if (/[0-9]/.test(char)) {
-            numbers += entry;
-        } else {
-            symbols += entry;
+        for (const [char, code] of Object.entries(morseCodeMap)) {
+            const entry = `**${char}** ➤ *In Morse Is*  〔 **${code}** 〕\n`;
+            if (/[A-Z]/.test(char)) {
+                alphabets += entry;
+            } else if (/[0-9]/.test(char)) {
+                numbers += entry;
+            } else {
+                symbols += entry;
+            }
         }
+
+        embed.addFields(
+            { name: 'Alphabets', value: alphabets.trim() || 'None', inline: false },
+            { name: 'Numbers', value: numbers.trim() || 'None', inline: false },
+            { name: 'Symbols', value: symbols.trim() || 'None', inline: false }
+        );
+
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handleLearn:', error);
+        await interaction.editReply('An error occurred while fetching the Morse code reference.');
     }
-
-    embed.addFields(
-        { name: 'Alphabets', value: alphabets.trim() || 'None', inline: false },
-        { name: 'Numbers', value: numbers.trim() || 'None', inline: false },
-        { name: 'Symbols', value: symbols.trim() || 'None', inline: false }
-    );
-
-    await interaction.reply({ embeds: [embed] });
 }
 
 function textToMorse(text) {
