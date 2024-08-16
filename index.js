@@ -162,9 +162,6 @@ client.on('interactionCreate', async interaction => {
 
     const command = interaction.commandName;
 
-    // Defer the reply for all commands
-    await interaction.deferReply();
-
     try {
         switch (command) {
             case 'ping':
@@ -205,7 +202,11 @@ client.on('interactionCreate', async interaction => {
         }
     } catch (error) {
         console.error(`Error executing command ${command}:`, error);
-        await interaction.editReply({ content: 'An error occurred while processing your request.', ephemeral: true });
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
+        } else {
+            await interaction.followUp({ content: 'An error occurred while processing your request.', ephemeral: true });
+        }
     }
 });
 
@@ -214,9 +215,7 @@ function isMorseCode(input) {
 }
 
 async function handlePing(interaction) {
-    await interaction.deferReply();
-    const sent = await interaction.fetchReply();
-
+    const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
     const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
     const wsLatency = interaction.client.ws.ping;
 
@@ -229,7 +228,7 @@ async function handlePing(interaction) {
         .setColor('Green')
         .setFooter({ text: footerText });
 
-    await interaction.editReply({ embeds: [embed] });
+    await interaction.editReply({ content: null, embeds: [embed] });
 }
 
 async function handleHelp(interaction) {
@@ -357,8 +356,6 @@ async function handleMorse(interaction) {
 }
 
 async function handleDemorse(interaction) {
-    await interaction.deferReply(); // Defer the reply to prevent timeout
-
     const morse = interaction.options.getString('morse');
     const decodedText = morseToText(morse);
 
@@ -371,7 +368,7 @@ async function handleDemorse(interaction) {
         .setColor('Purple')
         .setFooter({ text: footerText });
 
-    await interaction.editReply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
 }
 
 async function handleLightMorse(interaction) {
