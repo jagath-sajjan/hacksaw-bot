@@ -47,9 +47,17 @@ function pingServer() {
 // Ping every 14 minutes
 setInterval(pingServer, 14 * 60 * 1000);
 
-client.on('ready', async () => {
+cclient.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    client.user.setStatus('idle');
+
+    // Set bot status to idle
+    client.user.setPresence({
+        status: 'idle',
+        activities: [{
+            name: 'NEW TECH TRENDS',
+            type: 'WATCHING', // You can choose from PLAYING, STREAMING, LISTENING, WATCHING
+        }],
+    });
 
     try {
         const rest = new REST({ version: '9' }).setToken(client.token);
