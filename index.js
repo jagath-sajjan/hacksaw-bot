@@ -15,7 +15,6 @@ const {
     ButtonStyle
 } = require('discord.js');
 
-const fetch = require('node-fetch');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
 const { Routes } = require('discord-api-types/v9');
