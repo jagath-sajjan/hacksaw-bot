@@ -15,6 +15,7 @@ const {
     ButtonStyle
 } = require('discord.js');
 
+const fetch = require('node-fetch');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
 const { Routes } = require('discord-api-types/v9');
@@ -242,21 +243,22 @@ async function handleIPLookup(interaction) {
     await interaction.deferReply();
     try {
         const ipAddress = interaction.options.getString('address');
-        const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+        const response = await fetch(`http://ip-api.com/json/${ipAddress}`);
         const data = await response.json();
 
-        if (!data.error) {
+        if (data.status === 'success') {
             const embed = new EmbedBuilder()
                 .setTitle(`IP Information: ${ipAddress}`)
                 .addFields(
-                    { name: 'Country', value: data.country_name || 'N/A', inline: true },
-                    { name: 'Region', value: data.region || 'N/A', inline: true },
+                    { name: 'Country', value: data.country || 'N/A', inline: true },
+                    { name: 'Region', value: data.regionName || 'N/A', inline: true },
                     { name: 'City', value: data.city || 'N/A', inline: true },
-                    { name: 'ZIP', value: data.postal || 'N/A', inline: true },
-                    { name: 'Latitude', value: data.latitude?.toString() || 'N/A', inline: true },
-                    { name: 'Longitude', value: data.longitude?.toString() || 'N/A', inline: true },
-                    { name: 'ISP', value: data.org || 'N/A', inline: true },
-                    { name: 'ASN', value: data.asn || 'N/A', inline: true },
+                    { name: 'ZIP', value: data.zip || 'N/A', inline: true },
+                    { name: 'Latitude', value: data.lat?.toString() || 'N/A', inline: true },
+                    { name: 'Longitude', value: data.lon?.toString() || 'N/A', inline: true },
+                    { name: 'ISP', value: data.isp || 'N/A', inline: true },
+                    { name: 'Organization', value: data.org || 'N/A', inline: true },
+                    { name: 'AS', value: data.as || 'N/A', inline: true },
                     { name: 'Timezone', value: data.timezone || 'N/A', inline: true }
                 )
                 .setColor('Blue')
@@ -264,7 +266,7 @@ async function handleIPLookup(interaction) {
 
             await interaction.editReply({ embeds: [embed] });
         } else {
-            await interaction.editReply(`Failed to fetch information for IP: ${ipAddress}. Error: ${data.reason}`);
+            await interaction.editReply(`Failed to fetch information for IP: ${ipAddress}. Error: ${data.message}`);
         }
     } catch (error) {
         console.error('Error in handleIPLookup:', error);
