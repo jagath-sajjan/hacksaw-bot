@@ -215,7 +215,8 @@ function isMorseCode(input) {
 }
 
 async function handlePing(interaction) {
-    const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
+    await interaction.deferReply();
+    const sent = await interaction.editReply('Pinging...');
     const roundtripLatency = sent.createdTimestamp - interaction.createdTimestamp;
     const wsLatency = interaction.client.ws.ping;
 
@@ -232,11 +233,12 @@ async function handlePing(interaction) {
 }
 
 async function handleHelp(interaction) {
+    await interaction.deferReply();
     const embed = new EmbedBuilder()
         .setTitle('Available Commands')
         .addFields(
             { name: '/ping', value: 'Show bot latency', inline: true },
-            {name: '/botinfo', value: 'Show Bot Info', inline: false},
+            { name: '/botinfo', value: 'Show Bot Info', inline: false },
             { name: '/help', value: 'Show all available commands', inline: true },
             { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
             { name: '/morse [text]', value: 'Convert text to Morse code', inline: false },
@@ -253,6 +255,7 @@ async function handleHelp(interaction) {
 }
 
 async function handleBotInfo(interaction) {
+    await interaction.deferReply();
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle('Morse Bot Information')
@@ -285,6 +288,7 @@ async function handleBotInfo(interaction) {
 }
 
 async function handleQR(interaction) {
+    await interaction.deferReply();
     const type = interaction.options.getString('type');
     const content = interaction.options.getString('content');
     const qrAttachment = await generateQRCode(type, content);
@@ -325,11 +329,13 @@ async function generateQRCode(type, content) {
 }
 
 async function handleCoinFlip(interaction) {
+    await interaction.deferReply();
     const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
     await interaction.editReply(`The coin landed on: **${result}**`);
 }
 
 async function handleRoll(interaction) {
+    await interaction.deferReply();
     const sides = interaction.options.getInteger('sides');
     if (sides < 2) {
         await interaction.editReply('A die must have at least 2 sides.');
@@ -340,6 +346,7 @@ async function handleRoll(interaction) {
 }
 
 async function handleMorse(interaction) {
+    await interaction.deferReply();
     const text = interaction.options.getString('text');
     const morseCode = textToMorse(text);
 
@@ -356,6 +363,7 @@ async function handleMorse(interaction) {
 }
 
 async function handleDemorse(interaction) {
+    await interaction.deferReply();
     const morse = interaction.options.getString('morse');
     const decodedText = morseToText(morse);
 
@@ -368,7 +376,7 @@ async function handleDemorse(interaction) {
         .setColor('Purple')
         .setFooter({ text: footerText });
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }
 
 async function handleLightMorse(interaction) {
@@ -408,6 +416,7 @@ async function handleSoundMorse(interaction) {
 }
 
 async function handleLearn(interaction) {
+    await interaction.deferReply();
     const morseCodeMap = {
         'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
         'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
