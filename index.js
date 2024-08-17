@@ -498,11 +498,15 @@ async function handleGif(interaction) {
     await interaction.deferReply();
     try {
         const keyword = interaction.options.getString('keyword');
+        console.log(`Searching for GIF with keyword: ${keyword}`);
+
         const response = await giphy.search(keyword, { limit: 1 });
-        
+        console.log('Giphy API response:', JSON.stringify(response, null, 2));
+
         if (response.data && response.data.length > 0) {
             const gifUrl = response.data[0].images.original.url;
-            
+            console.log(`Found GIF URL: ${gifUrl}`);
+
             const embed = new EmbedBuilder()
                 .setTitle(`GIF Search: ${keyword}`)
                 .setImage(gifUrl)
@@ -511,11 +515,12 @@ async function handleGif(interaction) {
 
             await interaction.editReply({ embeds: [embed] });
         } else {
+            console.log(`No GIFs found for keyword: ${keyword}`);
             await interaction.editReply(`No GIFs found for "${keyword}".`);
         }
     } catch (error) {
-        console.error('Error in handleGif:', error);
-        await interaction.editReply('An error occurred while searching for the GIF.');
+        console.error('Error in handleGif:', error.message, error.stack);
+        await interaction.editReply('An error occurred while searching for the GIF. Please try again later.');
     }
 }
 
