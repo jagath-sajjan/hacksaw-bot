@@ -129,6 +129,18 @@ client.on('ready', async () => {
                     ]
                 },
                 {
+                    name: 'anagram',
+                    description: 'Find anagrams for a given word or phrase',
+                    options: [
+                        {
+                            name: 'input',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The word or phrase to find anagrams for',
+                            required: true
+                        }
+                    ]
+                },
+                {
                     name: 'morse',
                     description: 'Convert text to Morse code',
                     options: [
@@ -327,6 +339,9 @@ client.on('interactionCreate', async interaction => {
             case 'dic':
                 await handleDictionary(interaction);
                 break;
+            case 'anagram':
+                await handleAnagram(interaction);
+                break;    
             case 'convert':
                 await handleConvert(interaction);
                 break;        
@@ -539,6 +554,47 @@ function convertUnit(value, fromUnit, toUnit) {
     return null; // Invalid conversion
 }
 
+async function handleAnagram(interaction) {
+    await interaction.deferReply();
+    try {
+        const input = interaction.options.getString('input').toLowerCase().replace(/[^a-z]/g, '');
+        const apiKey = '90255b8e-0c5f-4168-80ae-f7db770dd2c4';
+        const response = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${input}?key=${apiKey}`);
+        
+        let anagrams = [];
+        if (Array.isArray(response.data)) {
+            anagrams = response.data
+                .filter(entry => typeof entry === 'object' && entry.meta && entry.meta.id)
+                .map(entry => entry.meta.id.split(':')[0])
+                .filter(word => isAnagram(input, word));
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle(`Anagrams for "${interaction.options.getString('input')}"`)
+            .setColor('Blue')
+            .setFooter({ text: footerText });
+
+        if (anagrams.length > 0) {
+            embed.setDescription(anagrams.slice(0, 20).join(', ') + (anagrams.length > 20 ? '...' : ''));
+            embed.addFields({ name: 'Total Anagrams Found', value: anagrams.length.toString() });
+        } else {
+            embed.setDescription('No anagrams found.');
+        }
+
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handleAnagram:', error);
+        await interaction.editReply('An error occurred while finding anagrams.');
+    }
+}
+
+function isAnagram(word1, word2) {
+    if (word1.length !== word2.length) return false;
+    const sortedWord1 = word1.split('').sort().join('');
+    const sortedWord2 = word2.split('').sort().join('');
+    return sortedWord1 === sortedWord2;
+}
+
 async function handleHelp(interaction) {
     await interaction.deferReply();
     try {
@@ -555,6 +611,7 @@ async function handleHelp(interaction) {
                 { name: '/ligmorse', value: 'Show Morse code with a visual display', inline: false },
                 { name: '/smorse', value: 'Play Morse code audio', inline: false },
                 { name: '/dic', value: 'Find Meaning Of Word', inline: false},
+                { name: '/anagram [input]', value: 'Find anagrams for a given word or phrase', inline: false },
                 { name: '/convert', value: 'Convert Units', inline: false},
                 { name: '/coin-flip', value: 'Flip a coin', inline: false },
                 { name: '/roll [sides]', value: 'Roll a die', inline: false },
