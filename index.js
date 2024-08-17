@@ -1,3 +1,4 @@
+// Ensure ReadableStream is defined globally if it's not available
 if (typeof globalThis.ReadableStream === 'undefined') {
     const { ReadableStream } = require('stream/web');
     globalThis.ReadableStream = ReadableStream;
