@@ -561,29 +561,26 @@ async function handleAnagram(interaction) {
         const apiKey = '90255b8e-0c5f-4168-80ae-f7db770dd2c4';
         const response = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${input}?key=${apiKey}`);
         
+        console.log('API Response:', JSON.stringify(response.data, null, 2)); // Log the API response
+
         let anagrams = new Set();
         if (Array.isArray(response.data)) {
-            response.data
-                .filter(entry => typeof entry === 'object' && entry.meta && entry.meta.id)
-                .forEach(entry => {
-                    const word = entry.meta.id.split(':')[0].toLowerCase().replace(/[^a-z]/g, '');
-                    if (isAnagram(input, word) && word !== input) {
-                        anagrams.add(word);
+            response.data.forEach(entry => {
+                if (typeof entry === 'string') {
+                    // If the entry is a string, it's likely a suggestion
+                    if (isAnagram(input, entry) && entry !== input) {
+                        anagrams.add(entry);
                     }
-                });
-        }
-
-        // If no anagrams found, try to find words that can be made from the input letters
-        if (anagrams.size === 0) {
-            const inputLetters = input.split('').sort().join('');
-            response.data
-                .filter(entry => typeof entry === 'object' && entry.meta && entry.meta.id)
-                .forEach(entry => {
-                    const word = entry.meta.id.split(':')[0].toLowerCase().replace(/[^a-z]/g, '');
-                    if (canMakeWord(inputLetters, word) && word !== input) {
-                        anagrams.add(word);
-                    }
-                });
+                } else if (typeof entry === 'object' && entry.meta && entry.meta.stems) {
+                    // If it's an object, check the 'stems' array
+                    entry.meta.stems.forEach(word => {
+                        const cleanWord = word.toLowerCase().replace(/[^a-z]/g, '');
+                        if (isAnagram(input, cleanWord) && cleanWord !== input) {
+                            anagrams.add(cleanWord);
+                        }
+                    });
+                }
+            });
         }
 
         const anagramArray = Array.from(anagrams);
@@ -612,18 +609,6 @@ function isAnagram(word1, word2) {
     const sortedWord1 = word1.split('').sort().join('');
     const sortedWord2 = word2.split('').sort().join('');
     return sortedWord1 === sortedWord2;
-}
-
-function canMakeWord(letters, word) {
-    const letterCount = {};
-    for (let letter of letters) {
-        letterCount[letter] = (letterCount[letter] || 0) + 1;
-    }
-    for (let letter of word) {
-        if (!letterCount[letter]) return false;
-        letterCount[letter]--;
-    }
-    return true;
 }
 
 async function handleHelp(interaction) {
