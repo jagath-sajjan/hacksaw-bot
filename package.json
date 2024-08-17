@@ -17,6 +17,8 @@
     "qrcode": "^1.5.3",
     "axios": "^1.4.0",
     "date-fns-tz": "^2.0.0",
-    "giphy-api": "^2.0.2"
+    "giphy-api": "^2.0.2",
+    "@discordjs/voice": "^0.16.0",
+    "@discordjs/builders": "^1.6.3"
   }
 }
