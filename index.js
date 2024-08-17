@@ -908,12 +908,7 @@ async function handlePlay(interaction) {
         return;
     }
 
-    const filePath = path.join(__dirname, 'Code Glitch.mp3');
-
-    if (!fs.existsSync(filePath)) {
-        await interaction.editReply('The audio file "Code Glitch.mp3" does not exist.');
-        return;
-    }
+    const filePath = 'https://github.com/jagath-sajjan/morse/raw/main/play.mp3';
 
     try {
         const connection = joinVoiceChannel({
@@ -921,6 +916,8 @@ async function handlePlay(interaction) {
             guildId: guildId,
             adapterCreator: voiceChannel.guild.voiceAdapterCreator,
         });
+
+        console.log('Voice connection established:', connection);
 
         const player = createAudioPlayer();
         const resource = createAudioResource(filePath);
@@ -931,6 +928,7 @@ async function handlePlay(interaction) {
         activePlayers.set(guildId, player);
 
         player.on(AudioPlayerStatus.Idle, () => {
+            console.log('Audio playback finished. Cleaning up resources.');
             connection.destroy();
             activePlayers.delete(guildId);
         });
@@ -941,7 +939,7 @@ async function handlePlay(interaction) {
             activePlayers.delete(guildId);
         });
 
-        await interaction.editReply('Now playing: Code Glitch.mp3');
+        await interaction.editReply('Now playing: play.mp3');
 
     } catch (error) {
         console.error('Error in handlePlay:', error);
