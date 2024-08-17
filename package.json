@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Morse Discord Bot with AI capabilities",
   "main": "index.js",
-  "type": "module",  // Ensure this is present
+  "type": "module",
   "engines": {
     "node": ">=16.14.0"
   },
