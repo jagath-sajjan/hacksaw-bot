@@ -15,6 +15,8 @@ const {
     ButtonStyle
 } = require('discord.js');
 
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const axios = require('axios');
 const { exec } = require('node:child_process');
 const crypto = require('crypto');
@@ -268,6 +270,10 @@ client.on('ready', async () => {
                     description: 'Learn Morse code'
                 },
                 {
+                    name: 'play',
+                    description: 'Play Code Glitch'
+                },
+                {
                     name: 'time',
                     description: 'Get the current time in any timezone',
                     options: [
@@ -402,6 +408,9 @@ client.on('interactionCreate', async interaction => {
             case 'learn':
                 await handleLearn(interaction);
                 break;
+            case 'play':
+                await handlePlay(interaction);
+                break;    
             case 'time':
                 await handleTime(interaction);
                 break;    
@@ -861,6 +870,90 @@ async function handleBotInfo(interaction) {
         await interaction.editReply('An error occurred while fetching bot information.');
     }
 }
+
+const activePlayers = new Map();
+
+async function handlePlay(interaction) {
+    await interaction.deferReply();
+
+    const guildId = interaction.guildId;
+    const member = interaction.member;
+    const voiceChannel = member.voice.channel;
+
+    if (!voiceChannel) {
+        await interaction.editReply('You need to be in a voice channel to use this command!');
+        return;
+    }
+
+    if (activePlayers.has(guildId)) {
+        await interaction.editReply('I\'m already playing audio in this server. Please wait until I finish.');
+        return;
+    }
+
+    const filename = interaction.options.getString('Code Glitch');
+    const filePath = pconst activePlayers = new Map();
+
+    async function handlePlay(interaction) {
+        await interaction.deferReply();
+    
+        const guildId = interaction.guildId;
+        const member = interaction.member;
+        const voiceChannel = member.voice.channel;
+    
+        if (!voiceChannel) {
+            await interaction.editReply('You need to be in a voice channel to use this command!');
+            return;
+        }
+    
+        if (activePlayers.has(guildId)) {
+            await interaction.editReply('I\'m already playing audio in this server. Please wait until I finish.');
+            return;
+        }
+    
+        const filePath = path.join(__dirname, 'Code Glitch.mp3');
+    
+        if (!fs.existsSync(filePath)) {
+            await interaction.editReply('The audio file "Code Glitch.mp3" does not exist.');
+            return;
+        }
+    
+        try {
+            const connection = joinVoiceChannel({
+                channelId: voiceChannel.id,
+                guildId: guildId,
+                adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+            });
+    
+            const player = createAudioPlayer();
+            const resource = createAudioResource(filePath);
+    
+            player.play(resource);
+            connection.subscribe(player);
+    
+            activePlayers.set(guildId, player);
+    
+            player.on(AudioPlayerStatus.Idle, () => {
+                connection.destroy();
+                activePlayers.delete(guildId);
+            });
+    
+            player.on('error', error => {
+                console.error(`Error: ${error.message} with resource ${error.resource.metadata.title}`);
+                connection.destroy();
+                activePlayers.delete(guildId);
+            });
+    
+            await interaction.editReply('Now playing: Code Glitch.mp3');
+    
+        } catch (error) {
+            console.error('Error in handlePlay:', error);
+            await interaction.editReply('An error occurred while trying to play the audio.');
+            if (activePlayers.has(guildId)) {
+                activePlayers.delete(guildId);
+            }
+        }
+    }
+}    
 
 async function handleQR(interaction) {
     await interaction.deferReply();
