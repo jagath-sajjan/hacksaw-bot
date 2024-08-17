@@ -15,6 +15,7 @@
     "gifencoder": "^2.0.1",
     "canvas": "^2.11.2",
     "qrcode": "^1.5.3",
-    "@anthropic-ai/sdk": "^0.4.3"
+    "@anthropic-ai/sdk": "^0.4.3",
+    "axios": "^1.4.0"
   }
 }
