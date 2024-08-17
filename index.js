@@ -877,10 +877,29 @@ async function handlePlay(interaction) {
 
     const guildId = interaction.guildId;
     const member = interaction.member;
+
+    // Check if member object exists
+    if (!member) {
+        console.error('Member object is undefined');
+        await interaction.editReply('An error occurred while fetching your user information. Please try again.');
+        return;
+    }
+
+    // Log member's voice state
+    console.log('Member voice state:', member.voice);
+
     const voiceChannel = member.voice.channel;
 
     if (!voiceChannel) {
-        await interaction.editReply('You need to be in a voice channel to use this command!');
+        console.error('Voice channel not detected. Member voice state:', member.voice);
+        await interaction.editReply('I couldn\'t detect your voice channel. Are you sure you\'re in a voice channel? If you are, there might be an issue with permissions or bot configuration.');
+        return;
+    }
+
+    // Check bot permissions
+    const permissions = voiceChannel.permissionsFor(interaction.client.user);
+    if (!permissions.has('Connect') || !permissions.has('Speak')) {
+        await interaction.editReply('I don\'t have the necessary permissions to join and speak in your voice channel.');
         return;
     }
 
