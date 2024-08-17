@@ -24,6 +24,7 @@ const { Routes } = require('discord-api-types/v9');
 const { format, utcToZonedTime } = require('date-fns-tz');
 const QRCode = require('qrcode');
 const express = require('express');
+const giphy = require('giphy-api')('zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho');
 const https = require('https');
 const path = require('path');
 const fetch = require('node-fetch');
@@ -116,6 +117,18 @@ client.on('ready', async () => {
                             name: 'sides',
                             type: ApplicationCommandOptionType.Integer,
                             description: 'Number of sides on the die',
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: 'gif',
+                    description: 'Search for a GIF',
+                    options: [
+                        {
+                            name: 'keyword',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The keyword to search for',
                             required: true
                         }
                     ]
@@ -362,6 +375,9 @@ client.on('interactionCreate', async interaction => {
             case 'roll':
                 await handleRoll(interaction);
                 break;
+            case 'gif':
+                await handleGif(interaction);
+                break;    
             case 'dic':
                 await handleDictionary(interaction);
                 break;
@@ -476,6 +492,31 @@ function generatePassword(length, uppercase, lowercase, numbers, symbols) {
         password += charset[randomBytes[i] % charset.length];
     }
     return password;
+}
+
+async function handleGif(interaction) {
+    await interaction.deferReply();
+    try {
+        const keyword = interaction.options.getString('keyword');
+        const response = await giphy.search(keyword, { limit: 1 });
+        
+        if (response.data && response.data.length > 0) {
+            const gifUrl = response.data[0].images.original.url;
+            
+            const embed = new EmbedBuilder()
+                .setTitle(`GIF Search: ${keyword}`)
+                .setImage(gifUrl)
+                .setColor('Random')
+                .setFooter({ text: footerText });
+
+            await interaction.editReply({ embeds: [embed] });
+        } else {
+            await interaction.editReply(`No GIFs found for "${keyword}".`);
+        }
+    } catch (error) {
+        console.error('Error in handleGif:', error);
+        await interaction.editReply('An error occurred while searching for the GIF.');
+    }
 }
 
 async function handleIPLookup(interaction) {
