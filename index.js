@@ -662,6 +662,7 @@ async function handleHelp(interaction) {
                 { name: '/convert', value: 'Convert Units', inline: false},
                 { name: '/coin-flip', value: 'Flip a coin', inline: false },
                 { name: '/roll [sides]', value: 'Roll a die', inline: false },
+                { name: '/time', value: 'Current Time In That TimeZone', inline: false},
                 { name: '/learn', value: 'Learn Morse code', inline: false },
                 { name: '/pass-gen', value: 'Generate a secure random password', inline: false }
             )
