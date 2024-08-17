@@ -16,6 +16,7 @@
     "canvas": "^2.11.2",
     "qrcode": "^1.5.3",
     "axios": "^1.4.0",
-    "date-fns-tz": "^2.0.0"
+    "date-fns-tz": "^2.0.0",
+    "giphy-api": "^2.0.2"
   }
 }
