@@ -18,7 +18,7 @@ import express from 'express';
 import giphy from 'giphy-api';
 import https from 'https';
 import path from 'path';
-import fetch from 'node-fetch';  // Updated import statement
+import fetch from 'node-fetch';  // Use ES Module import
 import fs from 'fs';
 
 const footerText = 'Made By Jagath🩵';
