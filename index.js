@@ -141,6 +141,30 @@ client.on('ready', async () => {
                     ]
                 },
                 {
+                    name: 'convert',
+                    description: 'Convert between different units',
+                    options: [
+                        {
+                            name: 'value',
+                            type: ApplicationCommandOptionType.Number,
+                            description: 'The value to convert',
+                            required: true
+                        },
+                        {
+                            name: 'from',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The unit to convert from',
+                            required: true
+                        },
+                        {
+                            name: 'to',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The unit to convert to',
+                            required: true
+                        }
+                   ]
+                },
+                {
                     name: 'demorse',
                     description: 'Convert Morse code to text',
                     options: [
@@ -268,7 +292,10 @@ client.on('interactionCreate', async interaction => {
                 break;
             case 'dic':
                 await handleDictionary(interaction);
-                break;    
+                break;
+            case 'convert':
+                await handleConvert(interaction);
+                break;        
             case 'morse':
                 await handleMorse(interaction);
                 break;
@@ -414,6 +441,70 @@ async function handlePing(interaction) {
     }
 }
 
+async function handleConvert(interaction) {
+    await interaction.deferReply();
+    try {
+        const value = interaction.options.getNumber('value');
+        const fromUnit = interaction.options.getString('from').toLowerCase();
+        const toUnit = interaction.options.getString('to').toLowerCase();
+
+        const result = convertUnit(value, fromUnit, toUnit);
+
+        if (result !== null) {
+            const embed = new EmbedBuilder()
+                .setTitle('Unit Conversion')
+                .setDescription(`${value} ${fromUnit} = ${result} ${toUnit}`)
+                .setColor('Green')
+                .setFooter({ text: footerText });
+
+            await interaction.editReply({ embeds: [embed] });
+        } else {
+            await interaction.editReply('Invalid unit conversion. Please check your units and try again.');
+        }
+    } catch (error) {
+        console.error('Error in handleConvert:', error);
+        await interaction.editReply('An error occurred while converting units.');
+    }
+}
+
+function convertUnit(value, fromUnit, toUnit) {
+    const conversions = {
+        // Length
+        'm': 1,
+        'km': 1000,
+        'cm': 0.01,
+        'mm': 0.001,
+        'in': 0.0254,
+        'ft': 0.3048,
+        'yd': 0.9144,
+        'mi': 1609.34,
+
+        // Weight
+        'kg': 1,
+        'g': 0.001,
+        'mg': 0.000001,
+        'lb': 0.453592,
+        'oz': 0.0283495,
+
+        // Temperature conversions are handled separately
+    };
+
+    // Special case for temperature
+    if ((fromUnit === 'c' && toUnit === 'f') || (fromUnit === 'f' && toUnit === 'c')) {
+        if (fromUnit === 'c') {
+            return (value * 9/5) + 32;
+        } else {
+            return (value - 32) * 5/9;
+        }
+    }
+
+    if (conversions[fromUnit] && conversions[toUnit]) {
+        return (value * conversions[fromUnit] / conversions[toUnit]).toFixed(4);
+    }
+
+    return null; // Invalid conversion
+}
+
 async function handleHelp(interaction) {
     await interaction.deferReply();
     try {
@@ -429,6 +520,8 @@ async function handleHelp(interaction) {
                 { name: '/demorse [morse]', value: 'Convert Morse code to text', inline: false },
                 { name: '/ligmorse', value: 'Show Morse code with a visual display', inline: false },
                 { name: '/smorse', value: 'Play Morse code audio', inline: false },
+                { name: '/dic', value: 'Find Meaning Of Word', inline: false},
+                { name: '/convert', value: 'Convert Units', inline: false},
                 { name: '/coin-flip', value: 'Flip a coin', inline: false },
                 { name: '/roll [sides]', value: 'Roll a die', inline: false },
                 { name: '/learn', value: 'Learn Morse code', inline: false },
