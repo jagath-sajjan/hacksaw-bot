@@ -21,7 +21,7 @@
     "@discordjs/voice": "^0.16.0",
     "@discordjs/builders": "^1.6.3",
     "@discordjs/opus": "^0.7.0",
-    "node-fetch": "^3.2.7"  // Added node-fetch here
+    "node-fetch": "^3.2.7"
   }
 }
 
