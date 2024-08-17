@@ -1,9 +1,3 @@
-// Ensure ReadableStream is defined globally if it's not available
-if (typeof globalThis.ReadableStream === 'undefined') {
-    const { ReadableStream } = require('stream/web');
-    globalThis.ReadableStream = ReadableStream;
-}
-
 import { Client, GatewayIntentBits, EmbedBuilder, ApplicationCommandOptionType, AttachmentBuilder, REST, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice';
 import { SlashCommandBuilder } from '@discordjs/builders';
@@ -33,6 +27,11 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
     ],
 });
+
+if (typeof globalThis.ReadableStream === 'undefined') {
+    const { ReadableStream } = require('stream/web');
+    globalThis.ReadableStream = ReadableStream;
+}
 
 function pingServer() {
     https.get('https://morse-w4z7.onrender.com', (resp) => {
