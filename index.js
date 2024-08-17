@@ -721,59 +721,60 @@ async function handleHelp(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Available Commands')
             .setColor('Green')
+            .setDescription('Here are all the available commands, categorized for easy reference:')
             .setFooter({ text: footerText });
 
-        // Utility Commands
-        embed.addFields({
-            name: '📊 Utility',
-            value: `
-                • **/ping**: Show bot latency
-                • **/help**: Show all available commands
-                • **/botinfo**: Show Bot Info
-                • **/time [timezone]**: Get current time in specified timezone
-                • **/ip [ip-address]**: Find info about the IP address
-                • **/pass-gen**: Generate a secure random password
-            `
-        });
+        const categories = [
+            {
+                name: '📊 Utility',
+                commands: [
+                    { name: 'ping', desc: 'Bot latency' },
+                    { name: 'help', desc: 'Show commands' },
+                    { name: 'botinfo', desc: 'Bot info' },
+                    { name: 'time', desc: 'Get time' },
+                    { name: 'ip', desc: 'IP info' },
+                    { name: 'pass-gen', desc: 'Generate password' }
+                ]
+            },
+            {
+                name: '💬 Communication',
+                commands: [
+                    { name: 'qr', desc: 'Generate QR code' },
+                    { name: 'gif', desc: 'Send GIF' }
+                ]
+            },
+            {
+                name: '📝 Language & Text',
+                commands: [
+                    { name: 'dic', desc: 'Word definition' },
+                    { name: 'anagram', desc: 'Find anagrams' },
+                    { name: 'convert', desc: 'Convert units' }
+                ]
+            },
+            {
+                name: '🔤 Morse Code',
+                commands: [
+                    { name: 'morse', desc: 'Text to Morse' },
+                    { name: 'demorse', desc: 'Morse to text' },
+                    { name: 'ligmorse', desc: 'Visual Morse' },
+                    { name: 'smorse', desc: 'Audio Morse' },
+                    { name: 'learn', desc: 'Learn Morse' }
+                ]
+            },
+            {
+                name: '🎲 Fun & Games',
+                commands: [
+                    { name: 'coin-flip', desc: 'Flip a coin' },
+                    { name: 'roll', desc: 'Roll a die' }
+                ]
+            }
+        ];
 
-        // Communication Commands
-        embed.addFields({
-            name: '💬 Communication',
-            value: `
-                • **/qr [type] [content]**: Generate a QR code (UPI, PayPal, or other)
-                • **/gif [keyword]**: Send GIF via bot
-            `
-        });
-
-        // Language & Text Commands
-        embed.addFields({
-            name: '📝 Language & Text',
-            value: `
-                • **/dic [word]**: Find meaning of a word
-                • **/anagram [input]**: Find anagrams for a given word or phrase
-                • **/convert**: Convert between different units
-            `
-        });
-
-        // Morse Code Commands
-        embed.addFields({
-            name: '🔤 Morse Code',
-            value: `
-                • **/morse [text]**: Convert text to Morse code
-                • **/demorse [morse]**: Convert Morse code to text
-                • **/ligmorse [input]**: Show Morse code with a visual display
-                • **/smorse [input]**: Play Morse code audio
-                • **/learn**: Learn Morse code
-            `
-        });
-
-        // Fun & Games Commands
-        embed.addFields({
-            name: '🎲 Fun & Games',
-            value: `
-                • **/coin-flip**: Flip a coin
-                • **/roll [sides]**: Roll a die with specified number of sides
-            `
+        categories.forEach(category => {
+            let fieldValue = category.commands.map(cmd => 
+                `\`/${cmd.name}\` - ${cmd.desc}`
+            ).join('\n');
+            embed.addFields({ name: category.name, value: fieldValue });
         });
 
         await interaction.editReply({ embeds: [embed] });
