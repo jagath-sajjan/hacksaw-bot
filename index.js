@@ -465,7 +465,7 @@ async function handleTime(interaction) {
         const embed = new EmbedBuilder()
             .setTitle(`Current Time in ${timezone}`)
             .setDescription(`The current time is: **${currentTime}**`)
-            .setColor('Blue')
+            .setColor('Green')
             .setFooter({ text: footerText });
 
         await interaction.editReply({ embeds: [embed] });
@@ -573,7 +573,7 @@ async function handleIPLookup(interaction) {
                     { name: 'AS', value: data.as || 'N/A', inline: true },
                     { name: 'Timezone', value: data.timezone || 'N/A', inline: true }
                 )
-                .setColor('Blue')
+                .setColor('Green')
                 .setFooter({ text: footerText });
 
             await interaction.editReply({ embeds: [embed] });
@@ -698,7 +698,7 @@ async function handleAnagram(interaction) {
 
         const embed = new EmbedBuilder()
             .setTitle(`Anagrams for "${interaction.options.getString('input')}"`)
-            .setColor('Blue')
+            .setColor('Green')
             .setFooter({ text: footerText });
 
         if (filteredAnagrams.length > 0) {
@@ -794,7 +794,7 @@ async function handleDictionary(interaction) {
         if (data) {
             const embed = new EmbedBuilder()
                 .setTitle(`Definition of "${word}"`)
-                .setColor('Blue')
+                .setColor('Green')
                 .setFooter({ text: footerText });
 
             data.meanings.forEach((meaning, index) => {
@@ -874,7 +874,7 @@ async function handleQR(interaction) {
                 .setTitle(`Generated QR Code (${type.toUpperCase()})`)
                 .setDescription(`Content: ${content}`)
                 .setImage('attachment://qrcode.png')
-                .setColor('Blue')
+                .setColor('Green')
                 .setFooter({ text: footerText });
 
             await interaction.editReply({ embeds: [embed], files: [qrAttachment] });
@@ -948,7 +948,7 @@ async function handleMorse(interaction) {
                 { name: 'Original Text', value: text },
                 { name: 'Morse Code', value: morseCode }
             )
-            .setColor('Blue')
+            .setColor('Green')
             .setFooter({ text: footerText });
 
         await interaction.editReply({ embeds: [embed] });
