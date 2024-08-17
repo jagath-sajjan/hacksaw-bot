@@ -3,35 +3,23 @@ if (typeof globalThis.ReadableStream === 'undefined') {
     globalThis.ReadableStream = ReadableStream;
 }
 
-const { 
-    Client, 
-    GatewayIntentBits, 
-    EmbedBuilder, 
-    ApplicationCommandOptionType, 
-    AttachmentBuilder, 
-    REST,
-    ActionRowBuilder, 
-    ButtonBuilder, 
-    ButtonStyle
-} = require('discord.js');
-
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const activePlayers = new Map();
-const axios = require('axios');
-const { exec } = require('node:child_process');
-const crypto = require('crypto');
-const GIFEncoder = require('gifencoder');
-const { createCanvas } = require('canvas');
-const { Routes } = require('discord-api-types/v9');
-const { format, utcToZonedTime } = require('date-fns-tz');
-const QRCode = require('qrcode');
-const express = require('express');
-const giphy = require('giphy-api')('zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho');
-const https = require('https');
-const path = require('path');
-const fetch = require('node-fetch');
-const fs = require('fs');
+import { Client, GatewayIntentBits, EmbedBuilder, ApplicationCommandOptionType, AttachmentBuilder, REST, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import axios from 'axios';
+import { exec } from 'node:child_process';
+import crypto from 'crypto';
+import GIFEncoder from 'gifencoder';
+import { createCanvas } from 'canvas';
+import { Routes } from 'discord-api-types/v9';
+import { format, utcToZonedTime } from 'date-fns-tz';
+import QRCode from 'qrcode';
+import express from 'express';
+import giphy from 'giphy-api';
+import https from 'https';
+import path from 'path';
+import fetch from 'node-fetch';  // Updated import statement
+import fs from 'fs';
 
 const footerText = 'Made By Jagath🩵';
 
