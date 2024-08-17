@@ -720,28 +720,62 @@ async function handleHelp(interaction) {
     try {
         const embed = new EmbedBuilder()
             .setTitle('Available Commands')
-            .addFields(
-                { name: '/ping', value: 'Show bot latency', inline: true },
-                { name: '/ip [ip-adress]', value: 'Find Info Abt The IP', inline: false},
-                { name: '/botinfo', value: 'Show Bot Info', inline: false },
-                { name: '/gif [keyword]', value: 'Send GIF Via Bot', inline: false},
-                { name: '/help', value: 'Show all available commands', inline: true },
-                { name: '/qr [type] [content]', value: 'Generate a QR code (UPI, PayPal, or other)', inline: false },
-                { name: '/morse [text]', value: 'Convert text to Morse code', inline: false },
-                { name: '/demorse [morse]', value: 'Convert Morse code to text', inline: false },
-                { name: '/ligmorse', value: 'Show Morse code with a visual display', inline: false },
-                { name: '/smorse', value: 'Play Morse code audio', inline: false },
-                { name: '/dic', value: 'Find Meaning Of Word', inline: false},
-                { name: '/anagram [input]', value: 'Find anagrams for a given word or phrase', inline: false },
-                { name: '/convert', value: 'Convert Units', inline: false},
-                { name: '/coin-flip', value: 'Flip a coin', inline: false },
-                { name: '/roll [sides]', value: 'Roll a die', inline: false },
-                { name: '/time', value: 'Current Time In That TimeZone', inline: false},
-                { name: '/learn', value: 'Learn Morse code', inline: false },
-                { name: '/pass-gen', value: 'Generate a secure random password', inline: false }
-            )
             .setColor('Green')
             .setFooter({ text: footerText });
+
+        // Utility Commands
+        embed.addFields({
+            name: '📊 Utility',
+            value: `
+                • **/ping**: Show bot latency
+                • **/help**: Show all available commands
+                • **/botinfo**: Show Bot Info
+                • **/time [timezone]**: Get current time in specified timezone
+                • **/ip [ip-address]**: Find info about the IP address
+                • **/pass-gen**: Generate a secure random password
+            `
+        });
+
+        // Communication Commands
+        embed.addFields({
+            name: '💬 Communication',
+            value: `
+                • **/qr [type] [content]**: Generate a QR code (UPI, PayPal, or other)
+                • **/gif [keyword]**: Send GIF via bot
+            `
+        });
+
+        // Language & Text Commands
+        embed.addFields({
+            name: '📝 Language & Text',
+            value: `
+                • **/dic [word]**: Find meaning of a word
+                • **/anagram [input]**: Find anagrams for a given word or phrase
+                • **/convert**: Convert between different units
+            `
+        });
+
+        // Morse Code Commands
+        embed.addFields({
+            name: '🔤 Morse Code',
+            value: `
+                • **/morse [text]**: Convert text to Morse code
+                • **/demorse [morse]**: Convert Morse code to text
+                • **/ligmorse [input]**: Show Morse code with a visual display
+                • **/smorse [input]**: Play Morse code audio
+                • **/learn**: Learn Morse code
+            `
+        });
+
+        // Fun & Games Commands
+        embed.addFields({
+            name: '🎲 Fun & Games',
+            value: `
+                • **/coin-flip**: Flip a coin
+                • **/roll [sides]**: Roll a die with specified number of sides
+            `
+        });
+
         await interaction.editReply({ embeds: [embed] });
     } catch (error) {
         console.error('Error in handleHelp:', error);
