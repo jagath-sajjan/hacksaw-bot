@@ -908,7 +908,8 @@ async function handlePlay(interaction) {
         return;
     }
 
-    const filePath = 'https://github.com/jagath-sajjan/morse/raw/main/play.mp3';
+    // JukeHost audio file URL
+    const filePath = 'https://audio.jukehost.co.uk/Lv4Z0EIMgN1a5NeW4ghSSzDf3ihELSLm';
 
     try {
         const connection = joinVoiceChannel({
@@ -934,12 +935,12 @@ async function handlePlay(interaction) {
         });
 
         player.on('error', error => {
-            console.error(`Error: ${error.message} with resource ${error.resource.metadata.title}`);
+            console.error(`Error: ${error.message}`);
             connection.destroy();
             activePlayers.delete(guildId);
         });
 
-        await interaction.editReply('Now playing: play.mp3');
+        await interaction.editReply('Now playing audio from JukeHost.');
 
     } catch (error) {
         console.error('Error in handlePlay:', error);
