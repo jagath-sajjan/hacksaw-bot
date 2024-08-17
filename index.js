@@ -23,6 +23,7 @@ const { exec } = require('node:child_process');
 const crypto = require('crypto');
 const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
+const fetch = require('node-fetch');
 const { Routes } = require('discord-api-types/v9');
 const { format, utcToZonedTime } = require('date-fns-tz');
 const QRCode = require('qrcode');
