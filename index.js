@@ -561,22 +561,41 @@ async function handleAnagram(interaction) {
         const apiKey = '90255b8e-0c5f-4168-80ae-f7db770dd2c4';
         const response = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${input}?key=${apiKey}`);
         
-        let anagrams = [];
+        let anagrams = new Set();
         if (Array.isArray(response.data)) {
-            anagrams = response.data
+            response.data
                 .filter(entry => typeof entry === 'object' && entry.meta && entry.meta.id)
-                .map(entry => entry.meta.id.split(':')[0])
-                .filter(word => isAnagram(input, word));
+                .forEach(entry => {
+                    const word = entry.meta.id.split(':')[0].toLowerCase().replace(/[^a-z]/g, '');
+                    if (isAnagram(input, word) && word !== input) {
+                        anagrams.add(word);
+                    }
+                });
         }
+
+        // If no anagrams found, try to find words that can be made from the input letters
+        if (anagrams.size === 0) {
+            const inputLetters = input.split('').sort().join('');
+            response.data
+                .filter(entry => typeof entry === 'object' && entry.meta && entry.meta.id)
+                .forEach(entry => {
+                    const word = entry.meta.id.split(':')[0].toLowerCase().replace(/[^a-z]/g, '');
+                    if (canMakeWord(inputLetters, word) && word !== input) {
+                        anagrams.add(word);
+                    }
+                });
+        }
+
+        const anagramArray = Array.from(anagrams);
 
         const embed = new EmbedBuilder()
             .setTitle(`Anagrams for "${interaction.options.getString('input')}"`)
             .setColor('Blue')
             .setFooter({ text: footerText });
 
-        if (anagrams.length > 0) {
-            embed.setDescription(anagrams.slice(0, 20).join(', ') + (anagrams.length > 20 ? '...' : ''));
-            embed.addFields({ name: 'Total Anagrams Found', value: anagrams.length.toString() });
+        if (anagramArray.length > 0) {
+            embed.setDescription(anagramArray.slice(0, 20).join(', ') + (anagramArray.length > 20 ? '...' : ''));
+            embed.addFields({ name: 'Total Anagrams Found', value: anagramArray.length.toString() });
         } else {
             embed.setDescription('No anagrams found.');
         }
@@ -593,6 +612,18 @@ function isAnagram(word1, word2) {
     const sortedWord1 = word1.split('').sort().join('');
     const sortedWord2 = word2.split('').sort().join('');
     return sortedWord1 === sortedWord2;
+}
+
+function canMakeWord(letters, word) {
+    const letterCount = {};
+    for (let letter of letters) {
+        letterCount[letter] = (letterCount[letter] || 0) + 1;
+    }
+    for (let letter of word) {
+        if (!letterCount[letter]) return false;
+        letterCount[letter]--;
+    }
+    return true;
 }
 
 async function handleHelp(interaction) {
