@@ -15,6 +15,7 @@ const {
     ButtonStyle
 } = require('discord.js');
 
+const axios = require('axios');
 const { exec } = require('node:child_process');
 const crypto = require('crypto');
 const GIFEncoder = require('gifencoder');
@@ -111,6 +112,18 @@ client.on('ready', async () => {
                             name: 'sides',
                             type: ApplicationCommandOptionType.Integer,
                             description: 'Number of sides on the die',
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: 'dic',
+                    description: 'Look up definitions for words',
+                    options: [
+                        {
+                            name: 'word',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The word to look up',
                             required: true
                         }
                     ]
@@ -253,6 +266,9 @@ client.on('interactionCreate', async interaction => {
             case 'roll':
                 await handleRoll(interaction);
                 break;
+            case 'dic':
+                await handleDictionary(interaction);
+                break;    
             case 'morse':
                 await handleMorse(interaction);
                 break;
@@ -424,6 +440,46 @@ async function handleHelp(interaction) {
     } catch (error) {
         console.error('Error in handleHelp:', error);
         await interaction.editReply('An error occurred while fetching the help information.');
+    }
+}
+
+async function handleDictionary(interaction) {
+    await interaction.deferReply();
+    try {
+        const word = interaction.options.getString('word');
+        const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const data = response.data[0];
+
+        if (data) {
+            const embed = new EmbedBuilder()
+                .setTitle(`Definition of "${word}"`)
+                .setColor('Blue')
+                .setFooter({ text: footerText });
+
+            data.meanings.forEach((meaning, index) => {
+                if (index < 3) {
+                    let definitionText = '';
+                    meaning.definitions.slice(0, 2).forEach((def, defIndex) => {
+                        definitionText += `${defIndex + 1}. ${def.definition}\n`;
+                        if (def.example) {
+                            definitionText += `   Example: *${def.example}*\n`;
+                        }
+                    });
+                    embed.addFields({ name: `${meaning.partOfSpeech}`, value: definitionText });
+                }
+            });
+
+            if (data.phonetic) {
+                embed.setDescription(`Phonetic: ${data.phonetic}`);
+            }
+
+            await interaction.editReply({ embeds: [embed] });
+        } else {
+            await interaction.editReply(`Sorry, I couldn't find a definition for "${word}".`);
+        }
+    } catch (error) {
+        console.error('Error in handleDictionary:', error);
+        await interaction.editReply('An error occurred while looking up the word. Please try again.');
     }
 }
 
