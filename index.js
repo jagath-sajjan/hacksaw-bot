@@ -1,20 +1,34 @@
-import { Client, GatewayIntentBits, EmbedBuilder, ApplicationCommandOptionType, AttachmentBuilder, REST, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice';
-import { SlashCommandBuilder } from '@discordjs/builders';
-import axios from 'axios';
-import { exec } from 'node:child_process';
-import crypto from 'crypto';
-import GIFEncoder from 'gifencoder';
-import { createCanvas } from 'canvas';
-import { Routes } from 'discord-api-types/v9';
-import { format, utcToZonedTime } from 'date-fns-tz';
-import QRCode from 'qrcode';
-import express from 'express';
-import giphy from 'giphy-api';
-import https from 'https';
-import path from 'path';
-import fetch from 'node-fetch';  // Use ES Module import
-import fs from 'fs';
+if (typeof globalThis.ReadableStream === 'undefined') {
+    const { ReadableStream } = require('stream/web');
+    globalThis.ReadableStream = ReadableStream;
+}
+
+const { 
+    Client, 
+    GatewayIntentBits, 
+    EmbedBuilder, 
+    ApplicationCommandOptionType, 
+    AttachmentBuilder, 
+    REST,
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle
+} = require('discord.js');
+
+const axios = require('axios');
+const { exec } = require('node:child_process');
+const crypto = require('crypto');
+const GIFEncoder = require('gifencoder');
+const { createCanvas } = require('canvas');
+const { Routes } = require('discord-api-types/v9');
+const { format, utcToZonedTime } = require('date-fns-tz');
+const QRCode = require('qrcode');
+const express = require('express');
+const giphy = require('giphy-api')('zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho');
+const https = require('https');
+const path = require('path');
+const fetch = require('node-fetch');
+const fs = require('fs');
 
 const footerText = 'Made By Jagath🩵';
 
@@ -27,11 +41,6 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
     ],
 });
-
-if (typeof globalThis.ReadableStream === 'undefined') {
-    const { ReadableStream } = require('stream/web');
-    globalThis.ReadableStream = ReadableStream;
-}
 
 function pingServer() {
     https.get('https://morse-w4z7.onrender.com', (resp) => {
@@ -259,10 +268,6 @@ client.on('ready', async () => {
                     description: 'Learn Morse code'
                 },
                 {
-                    name: 'play',
-                    description: 'Play Code Glitch'
-                },
-                {
                     name: 'time',
                     description: 'Get the current time in any timezone',
                     options: [
@@ -396,9 +401,6 @@ client.on('interactionCreate', async interaction => {
                 break;
             case 'learn':
                 await handleLearn(interaction);
-                break;
-            case 'play':
-                await handlePlay(interaction);
                 break;    
             case 'time':
                 await handleTime(interaction);
@@ -860,84 +862,6 @@ async function handleBotInfo(interaction) {
     }
 }
 
-async function handlePlay(interaction) {
-    await interaction.deferReply();
-
-    const guildId = interaction.guildId;
-    const member = interaction.member;
-
-    // Check if member object exists
-    if (!member) {
-        console.error('Member object is undefined');
-        await interaction.editReply('An error occurred while fetching your user information. Please try again.');
-        return;
-    }
-
-    // Log member's voice state
-    console.log('Member voice state:', member.voice);
-
-    const voiceChannel = member.voice.channel;
-
-    if (!voiceChannel) {
-        console.error('Voice channel not detected. Member voice state:', member.voice);
-        await interaction.editReply('I couldn\'t detect your voice channel. Are you sure you\'re in a voice channel? If you are, there might be an issue with permissions or bot configuration.');
-        return;
-    }
-
-    // Check bot permissions
-    const permissions = voiceChannel.permissionsFor(interaction.client.user);
-    if (!permissions.has('Connect') || !permissions.has('Speak')) {
-        await interaction.editReply('I don\'t have the necessary permissions to join and speak in your voice channel.');
-        return;
-    }
-
-    if (activePlayers.has(guildId)) {
-        await interaction.editReply('I\'m already playing audio in this server. Please wait until I finish.');
-        return;
-    }
-
-    // JukeHost audio file URL
-    const filePath = 'https://audio.jukehost.co.uk/Lv4Z0EIMgN1a5NeW4ghSSzDf3ihELSLm';
-
-    try {
-        const connection = joinVoiceChannel({
-            channelId: voiceChannel.id,
-            guildId: guildId,
-            adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-        });
-
-        console.log('Voice connection established:', connection);
-
-        const player = createAudioPlayer();
-        const resource = createAudioResource(filePath);
-
-        player.play(resource);
-        connection.subscribe(player);
-
-        activePlayers.set(guildId, player);
-
-        player.on(AudioPlayerStatus.Idle, () => {
-            console.log('Audio playback finished. Cleaning up resources.');
-            connection.destroy();
-            activePlayers.delete(guildId);
-        });
-
-        player.on('error', error => {
-            console.error(`Error: ${error.message}`);
-            connection.destroy();
-            activePlayers.delete(guildId);
-        });
-
-        await interaction.editReply('Now playing audio from JukeHost.');
-
-    } catch (error) {
-        console.error('Error in handlePlay:', error);
-        await interaction.editReply('An error occurred while trying to play the audio.');
-        if (activePlayers.has(guildId)) {
-            activePlayers.delete(guildId);
-        }
-    }
-}    
 
 async function handleQR(interaction) {
     await interaction.deferReply();
