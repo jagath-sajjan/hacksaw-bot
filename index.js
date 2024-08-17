@@ -154,13 +154,47 @@ client.on('ready', async () => {
                             name: 'from',
                             type: ApplicationCommandOptionType.String,
                             description: 'The unit to convert from',
-                            required: true
+                            required: true,
+                            choices: [
+                                { name: 'Meters', value: 'm' },
+                                { name: 'Kilometers', value: 'km' },
+                                { name: 'Centimeters', value: 'cm' },
+                                { name: 'Millimeters', value: 'mm' },
+                                { name: 'Inches', value: 'in' },
+                                { name: 'Feet', value: 'ft' },
+                                { name: 'Yards', value: 'yd' },
+                                { name: 'Miles', value: 'mi' },
+                                { name: 'Kilograms', value: 'kg' },
+                                { name: 'Grams', value: 'g' },
+                                { name: 'Milligrams', value: 'mg' },
+                                { name: 'Pounds', value: 'lb' },
+                                { name: 'Ounces', value: 'oz' },
+                                { name: 'Celsius', value: 'c' },
+                                { name: 'Fahrenheit', value: 'f' }
+                            ]
                         },
                         {
                             name: 'to',
                             type: ApplicationCommandOptionType.String,
                             description: 'The unit to convert to',
-                            required: true
+                            required: true,
+                            choices: [
+                                { name: 'Meters', value: 'm' },
+                                { name: 'Kilometers', value: 'km' },
+                                { name: 'Centimeters', value: 'cm' },
+                                { name: 'Millimeters', value: 'mm' },
+                                { name: 'Inches', value: 'in' },
+                                { name: 'Feet', value: 'ft' },
+                                { name: 'Yards', value: 'yd' },
+                                { name: 'Miles', value: 'mi' },
+                                { name: 'Kilograms', value: 'kg' },
+                                { name: 'Grams', value: 'g' },
+                                { name: 'Milligrams', value: 'mg' },
+                                { name: 'Pounds', value: 'lb' },
+                                { name: 'Ounces', value: 'oz' },
+                                { name: 'Celsius', value: 'c' },
+                                { name: 'Fahrenheit', value: 'f' }
+                            ]
                         }
                    ]
                 },
