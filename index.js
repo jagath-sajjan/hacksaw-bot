@@ -26,8 +26,11 @@ const express = require('express');
 const https = require('https');
 const path = require('path');
 const fetch = require('node-fetch');
+const fs = require('fs');
 
 const footerText = 'Made By Jagath🩵';
+
+const wordList = fs.readFileSync('words_alpha.txt', 'utf-8').split('\n').map(word => word.trim().toLowerCase());
 
 const client = new Client({
     intents: [
@@ -554,45 +557,33 @@ function convertUnit(value, fromUnit, toUnit) {
     return null; // Invalid conversion
 }
 
+const anagramMap = new Map();
+wordList.forEach(word => {
+    const sortedWord = word.split('').sort().join('');
+    if (!anagramMap.has(sortedWord)) {
+        anagramMap.set(sortedWord, []);
+    }
+    anagramMap.get(sortedWord).push(word);
+});
+
 async function handleAnagram(interaction) {
     await interaction.deferReply();
     try {
         const input = interaction.options.getString('input').toLowerCase().replace(/[^a-z]/g, '');
-        const apiKey = '90255b8e-0c5f-4168-80ae-f7db770dd2c4';
-        const response = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${input}?key=${apiKey}`);
-        
-        console.log('API Response:', JSON.stringify(response.data, null, 2)); // Log the API response
+        const sortedInput = input.split('').sort().join('');
+        const anagrams = anagramMap.get(sortedInput) || [];
 
-        let anagrams = new Set();
-        if (Array.isArray(response.data)) {
-            response.data.forEach(entry => {
-                if (typeof entry === 'string') {
-                    // If the entry is a string, it's likely a suggestion
-                    if (isAnagram(input, entry) && entry !== input) {
-                        anagrams.add(entry);
-                    }
-                } else if (typeof entry === 'object' && entry.meta && entry.meta.stems) {
-                    // If it's an object, check the 'stems' array
-                    entry.meta.stems.forEach(word => {
-                        const cleanWord = word.toLowerCase().replace(/[^a-z]/g, '');
-                        if (isAnagram(input, cleanWord) && cleanWord !== input) {
-                            anagrams.add(cleanWord);
-                        }
-                    });
-                }
-            });
-        }
-
-        const anagramArray = Array.from(anagrams);
+        // Remove the original word from the anagram list
+        const filteredAnagrams = anagrams.filter(word => word !== input);
 
         const embed = new EmbedBuilder()
             .setTitle(`Anagrams for "${interaction.options.getString('input')}"`)
             .setColor('Blue')
             .setFooter({ text: footerText });
 
-        if (anagramArray.length > 0) {
-            embed.setDescription(anagramArray.slice(0, 20).join(', ') + (anagramArray.length > 20 ? '...' : ''));
-            embed.addFields({ name: 'Total Anagrams Found', value: anagramArray.length.toString() });
+        if (filteredAnagrams.length > 0) {
+            embed.setDescription(filteredAnagrams.slice(0, 20).join(', ') + (filteredAnagrams.length > 20 ? '...' : ''));
+            embed.addFields({ name: 'Total Anagrams Found', value: filteredAnagrams.length.toString() });
         } else {
             embed.setDescription('No anagrams found.');
         }
@@ -602,13 +593,6 @@ async function handleAnagram(interaction) {
         console.error('Error in handleAnagram:', error);
         await interaction.editReply('An error occurred while finding anagrams.');
     }
-}
-
-function isAnagram(word1, word2) {
-    if (word1.length !== word2.length) return false;
-    const sortedWord1 = word1.split('').sort().join('');
-    const sortedWord2 = word2.split('').sort().join('');
-    return sortedWord1 === sortedWord2;
 }
 
 async function handleHelp(interaction) {
