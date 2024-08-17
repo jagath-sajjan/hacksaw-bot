@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Morse Discord Bot with AI capabilities",
   "main": "index.js",
-  "type": "module",
   "engines": {
     "node": ">=16.14.0"
   },
@@ -21,7 +20,6 @@
     "giphy-api": "^2.0.2",
     "@discordjs/voice": "^0.16.0",
     "@discordjs/builders": "^1.6.3",
-    "@discordjs/opus": "^0.7.0",
-    "node-fetch": "^3.3.0"
+    "@discordjs/opus": "^0.7.0"
   }
 }
