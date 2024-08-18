@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('pass')
+        .setName('pass-gen')
         .setDescription('Generate a secure random password')
         .addIntegerOption(option =>
             option.setName('length')
