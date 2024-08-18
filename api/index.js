@@ -4,8 +4,8 @@ const fs = require('fs');
 
 let client;
 
-function initializeBot() {
-    if (client) return;
+async function initializeBot() {
+    if (client) return client;
 
     client = new Client({
         intents: [
@@ -30,7 +30,7 @@ function initializeBot() {
         }
     }
 
-    client.on('ready', () => {
+    client.once('ready', () => {
         console.log(`Logged in as ${client.user.tag}!`);
         client.user.setPresence({
             status: 'idle',
@@ -44,39 +44,31 @@ function initializeBot() {
     client.on('interactionCreate', async interaction => {
         if (!interaction.isCommand()) return;
 
-        if (!interaction.inGuild()) {
-            await interaction.reply("This bot only works in servers, not private messages.");
-            return;
-        }
-
         const command = client.commands.get(interaction.commandName);
 
-        if (!command) {
-            console.error(`No command matching ${interaction.commandName} was found.`);
-            return;
-        }
+        if (!command) return;
 
         try {
             await command.execute(interaction);
         } catch (error) {
-            console.error(`Error executing command ${interaction.commandName}:`, error);
-            if (!interaction.replied && !interaction.deferred) {
-                await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
-            } else if (interaction.deferred) {
-                await interaction.editReply({ content: 'An error occurred while processing your request.' });
-            }
+            console.error(error);
+            await interaction.reply({ content: 'There was an error executing this command!', ephemeral: true });
         }
     });
 
-    client.login(process.env.DISCORD_BOT_TOKEN);
+    await client.login(process.env.DISCORD_BOT_TOKEN);
+    return client;
 }
+
+let lastPingTime = Date.now();
 
 module.exports = async (req, res) => {
     try {
-        if (!client) {
-            initializeBot();
+        if (!client || Date.now() - lastPingTime > 60000) { // Reinitialize every minute
+            client = await initializeBot();
+            lastPingTime = Date.now();
         }
-        res.status(200).send('Bot is running!');
+        res.status(200).send(`Bot is running! Last ping: ${new Date(lastPingTime).toISOString()}`);
     } catch (error) {
         console.error('Error in serverless function:', error);
         res.status(500).send('Internal Server Error');
