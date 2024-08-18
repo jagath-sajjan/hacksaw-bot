@@ -20,7 +20,7 @@ module.exports = {
                 {
                     name: '📝 Language & Text',
                     value: 'language',
-                    commands: ['dic', 'anagram', 'ascii', 'translate']
+                    commands: ['dic', 'anagram', 'ascii']
                 },
                 {
                     name: '🔤 Morse Code',
