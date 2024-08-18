@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
+    name: 'roll',
     data: new SlashCommandBuilder()
         .setName('roll')
         .setDescription('Roll a die')
