@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { AttachmentBuilder } = require('discord.js');
 
 module.exports = {
+    name: 'smorse',
     data: new SlashCommandBuilder()
         .setName('smorse')
         .setDescription('Play Morse code audio')
