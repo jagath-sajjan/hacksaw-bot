@@ -67,7 +67,7 @@ module.exports = {
         try {
             await interaction.user.send({
                 embeds: [{
-                    title: '😂 Pranked',
+                    title: '😎 Pranked',
                     image: { url: "https://media1.tenor.com/images/05006ed09075a0d6965383797c3cea00/tenor.gif?itemid=17987788" }
                 }]
             });
