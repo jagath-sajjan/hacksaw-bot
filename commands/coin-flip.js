@@ -5,7 +5,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('coin-flip')
         .setDescription('Flip a coin'),
-    name: 'coin-flip', // Add this line
+    name: 'coin-flip',// Add this line
+    description: ('Flip a coin'),
     async execute(interaction) {
         const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
         
