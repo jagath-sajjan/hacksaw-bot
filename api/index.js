@@ -2,39 +2,44 @@ const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const path = require('path');
 const fs = require('fs');
 
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-    ],
-});
+let client;
 
-client.commands = new Collection();
+function initializeBot() {
+    if (client) return;
 
-const commandsPath = path.join(__dirname, '..', 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-    if ('name' in command && 'execute' in command) {
-        client.commands.set(command.name, command);
-    } else {
-        console.log(`[WARNING] The command at ${filePath} is missing a required "name" or "execute" property.`);
-    }
-}
-
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-    client.user.setPresence({
-        status: 'idle',
-        activities: [{
-            name: 'NEW TECH TRENDS',
-            type: 'WATCHING',
-        }],
+    client = new Client({
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.MessageContent,
+        ],
     });
-});
+
+    client.commands = new Collection();
+
+    const commandsPath = path.join(__dirname, '..', 'commands');
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+        const filePath = path.join(commandsPath, file);
+        const command = require(filePath);
+        if ('name' in command && 'execute' in command) {
+            client.commands.set(command.name, command);
+        } else {
+            console.log(`[WARNING] The command at ${filePath} is missing a required "name" or "execute" property.`);
+        }
+    }
+
+    client.on('ready', () => {
+        console.log(`Logged in as ${client.user.tag}!`);
+        client.user.setPresence({
+            status: 'idle',
+            activities: [{
+                name: 'NEW TECH TRENDS',
+                type: 'WATCHING',
+            }],
+        });
+    });
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
@@ -63,7 +68,12 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+
 client.login(process.env.DISCORD_BOT_TOKEN);
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
+    if (!client) {
+        initializeBot();
+    }
     res.status(200).send('Bot is running!');
+};
