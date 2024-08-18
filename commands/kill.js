@@ -209,6 +209,6 @@ module.exports = {
 
         const randomKill = kills[Math.floor(Math.random() * kills.length)];
 
-        await interaction.reply({ content: `🔫 ${randomKill}`, ephemeral: false });
+        await interaction.reply({ content: `💀 ${randomKill}`, ephemeral: false });
     },
 };
