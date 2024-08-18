@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('coin-flip')
+        .setName('cf')
         .setDescription('Flip a coin'),
     async execute(interaction) {
         const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
