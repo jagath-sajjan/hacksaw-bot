@@ -4,6 +4,7 @@ const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
 
 module.exports = {
+    name: 'ligmorse', // Add this line to define the name property
     data: new SlashCommandBuilder()
         .setName('ligmorse')
         .setDescription('Show Morse code with a visual display')
