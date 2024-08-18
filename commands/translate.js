@@ -39,17 +39,31 @@ module.exports = {
             option.setName('language')
                 .setDescription('The language to translate to')
                 .setRequired(true)
-                .addChoices(...languageOptions))
+                .addChoices(...languageOptions)
+                .setAutocomplete(true))
         .addStringOption(option =>
             option.setName('text')
                 .setDescription('The text to translate')
                 .setRequired(true)),
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused().toLowerCase();
+        const filtered = languageOptions.filter(choice => 
+            choice.name.toLowerCase().includes(focusedValue) || 
+            choice.value.toLowerCase().includes(focusedValue)
+        );
+        await interaction.respond(
+            filtered.map(choice => ({ name: choice.name, value: choice.value }))
+        );
+    },
     async execute(interaction) {
         await interaction.deferReply();
         const language = interaction.options.getString('language');
         const text = interaction.options.getString('text');
+
         try {
             const res = await translate(text, { to: language });
+            
+            const targetLanguage = languageOptions.find(lang => lang.value === language)?.name || language;
             
             const embed = {
                 color: 0x0099ff,
@@ -65,7 +79,7 @@ module.exports = {
                     },
                     {
                         name: '🌐 Target Language',
-                        value: languageOptions.find(lang => lang.value === language).name,
+                        value: targetLanguage,
                     },
                 ],
                 timestamp: new Date(),
@@ -73,7 +87,7 @@ module.exports = {
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.error(error);
-            await interaction.editReply('An error occurred while translating. Please try again.');
+            await interaction.editReply('An error occurred while translating. Please make sure you\'ve entered a valid language code or selected a language from the list.');
         }
     },
 };
