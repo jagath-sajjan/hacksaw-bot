@@ -32,42 +32,43 @@ module.exports = {
         await interaction.reply({ content: `💻 Hacking ${user.username}...`, ephemeral: false });
 
         await wait(1000);
-        await interaction.editReply({ content: `Searching for user information...` });
+        await interaction.editReply({ content: `Searching for ${user.username}'s information...` });
 
         await wait(1000);
-        await interaction.editReply({ content: `Searching for IP address...` });
+        await interaction.editReply({ content: `Searching for ${user.username}'s IP address...` });
 
         await wait(1000);
-        await interaction.editReply({ content: `The user's IP address was found!\n🔗 IP Address: \`127.0.0.1\`` });
+        await interaction.editReply({ content: `${user.username}'s IP address was found!\n🔗 IP Address: \`127.0.0.1\`` });
 
         await wait(1000);
-        await interaction.editReply({ content: `Searching for Discord login...` });
+        await interaction.editReply({ content: `Searching for ${user.username}'s Discord login...` });
 
         await wait(1000);
-        await interaction.editReply({ content: `The user's Discord login was found!\n📨 Email: \`${user.username}onDiscord@gmail.com\`\n🔑 Password: \`${password}\`` });
+        await interaction.editReply({ content: `${user.username}'s Discord login was found!\n📨 Email: \`${user.username}onDiscord@gmail.com\`\n🔑 Password: \`${password}\`` });
 
         await wait(1000);
-        await interaction.editReply({ content: `Searching for Discord token...` });
+        await interaction.editReply({ content: `Searching for ${user.username}'s Discord token...` });
 
         await wait(1000);
         try {
             const response = await axios.get(`https://some-random-api.com/bottoken?${user.id}`);
             const json = response.data;
-            await interaction.editReply({ content: `The user's Discord account token was found!\n🔧 Token: \`${json.token}\`` });
+            await interaction.editReply({ content: `${user.username}'s Discord account token was found!\n🔧 Token: \`${json.token}\`` });
         } catch (error) {
-            await interaction.editReply({ content: `Failed to retrieve Discord token.` });
+            await interaction.editReply({ content: `Failed to retrieve ${user.username}'s Discord token.` });
         }
 
         await wait(1000);
-        await interaction.editReply({ content: `Reporting account to Discord for breaking TOS...` });
+        await interaction.editReply({ content: `Reporting ${user.username}'s account to Discord for breaking TOS...` });
 
         await wait(1000);
-        await interaction.editReply({ content: `@<${user.id}> has been successfully hacked! All the user's information was sent to your DM.` });
+        await interaction.editReply({ content: `${user} has been successfully hacked! All of ${user.username}'s information was sent to your DM.` });
 
         try {
             await interaction.user.send({
                 embeds: [{
                     title: '😎 Pranked',
+                    description: `You didn't actually hack ${user.username}. It was just a prank!`,
                     image: { url: "https://media1.tenor.com/images/05006ed09075a0d6965383797c3cea00/tenor.gif?itemid=17987788" }
                 }]
             });
