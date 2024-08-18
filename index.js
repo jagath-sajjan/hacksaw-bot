@@ -281,6 +281,10 @@ client.on('ready', async () => {
                     description: 'Learn Morse code'
                 },
                 {
+                    name: 'fact',
+                    description: 'Get a random fact'
+                },
+                {
                     name: 'time',
                     description: 'Get the current time in any timezone',
                     options: [
@@ -420,7 +424,10 @@ client.on('interactionCreate', async interaction => {
                 break;    
             case 'time':
                 await handleTime(interaction);
-                break;    
+                break;
+            case 'fact':
+                await handleFact(interaction);
+                break;          
             case 'ip':
                 await handleIPLookup(interaction);
                 break;
@@ -728,6 +735,25 @@ async function handleAnagram(interaction) {
     } catch (error) {
         console.error('Error in handleAnagram:', error);
         await interaction.editReply('An error occurred while finding anagrams.');
+    }
+}
+
+async function handleFact(interaction) {
+    await interaction.deferReply();
+    try {
+        const response = await axios.get('https://uselessfacts.jsph.pl/random.json?language=en');
+        const fact = response.data.text;
+
+        const embed = new EmbedBuilder()
+            .setTitle('😂 Random Fact')
+            .setDescription(fact)
+            .setColor('Random')
+            .setFooter({ text: footerText });
+
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Error in handleFact:', error);
+        await interaction.editReply('An error occurred while fetching a random fact.');
     }
 }
 
