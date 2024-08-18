@@ -1,31 +1,41 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 const crypto = require('crypto');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('pass-gen')
-        .setDescription('Generate a secure random password')
-        .addIntegerOption(option =>
-            option.setName('length')
-                .setDescription('Length of the password (default: 12, min: 8, max: 128)')
-                .setRequired(false))
-        .addBooleanOption(option =>
-            option.setName('uppercase')
-                .setDescription('Include uppercase letters (default: true)')
-                .setRequired(false))
-        .addBooleanOption(option =>
-            option.setName('lowercase')
-                .setDescription('Include lowercase letters (default: true)')
-                .setRequired(false))
-        .addBooleanOption(option =>
-            option.setName('numbers')
-                .setDescription('Include numbers (default: true)')
-                .setRequired(false))
-        .addBooleanOption(option =>
-            option.setName('symbols')
-                .setDescription('Include symbols (default: true)')
-                .setRequired(false)),
+    name: 'pass-gen',
+    description: 'Generate a secure random password',
+    options: [
+        {
+            name: 'length',
+            type: 4, // INTEGER
+            description: 'Length of the password (default: 12, min: 8, max: 128)',
+            required: false
+        },
+        {
+            name: 'uppercase',
+            type: 5, // BOOLEAN
+            description: 'Include uppercase letters (default: true)',
+            required: false
+        },
+        {
+            name: 'lowercase',
+            type: 5, // BOOLEAN
+            description: 'Include lowercase letters (default: true)',
+            required: false
+        },
+        {
+            name: 'numbers',
+            type: 5, // BOOLEAN
+            description: 'Include numbers (default: true)',
+            required: false
+        },
+        {
+            name: 'symbols',
+            type: 5, // BOOLEAN
+            description: 'Include symbols (default: true)',
+            required: false
+        }
+    ],
     async execute(interaction) {
         const length = interaction.options.getInteger('length') || 12;
         const uppercase = interaction.options.getBoolean('uppercase') ?? true;
