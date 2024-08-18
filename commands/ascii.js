@@ -43,7 +43,6 @@ module.exports = {
                     .setColor('Random')
                     .setFooter({ text: 'Made By Jagath🩵' });
 
-                // Add the requested message
                 embed.addFields({ name: 'Note', value: 'Use a computer/laptop to view the results properly' });
 
                 interaction.editReply({ embeds: [embed] }).catch(error => {
