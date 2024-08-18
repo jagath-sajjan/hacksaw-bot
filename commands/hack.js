@@ -62,7 +62,7 @@ module.exports = {
         await interaction.editReply({ content: `Reporting account to Discord for breaking TOS...` });
 
         await wait(1000);
-        await interaction.editReply({ content: `@<${user.username}> has been successfully hacked! All the user's information was sent to your DM.` });
+        await interaction.editReply({ content: `@${user.username} has been successfully hacked! All the user's information was sent to your DM.` });
 
         try {
             await interaction.user.send({
