@@ -1,10 +1,10 @@
 {
-  "name": "hacksaw",
+  "name": "morse-bot",
   "version": "1.0.0",
   "description": "Morse Discord Bot with AI capabilities",
   "main": "api/index.js",
   "engines": {
-    "node": ">=16.14.0"
+    "node": "18.x"
   },
   "scripts": {
     "start": "node api/index.js"
