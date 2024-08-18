@@ -3,6 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'roll',
+    description: 'Roll a die',
     data: new SlashCommandBuilder()
         .setName('roll')
         .setDescription('Roll a die')
