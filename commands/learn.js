@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'learn',
+    description: 'Learn Morse Code',
     data: new SlashCommandBuilder()
         .setName('learn')
         .setDescription('Learn Morse code'),
