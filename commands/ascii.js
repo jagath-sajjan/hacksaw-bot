@@ -1,16 +1,17 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
 const figlet = require('figlet');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('ascii')
-        .setDescription('Generate ASCII art from text')
-        .addStringOption(option =>
-            option.setName('text')
-                .setDescription('The text to convert to ASCII art')
-                .setRequired(true)),
-
+    name: 'ascii',
+    description: 'Generate ASCII art from text',
+    options: [
+        {
+            name: 'text',
+            type: 3, // STRING
+            description: 'The text to convert to ASCII art',
+            required: true
+        }
+    ],
     async execute(interaction) {
         await interaction.deferReply();
         try {
