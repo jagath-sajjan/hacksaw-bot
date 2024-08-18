@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const axios = require('axios');
 const generator = require('generate-password');
 
 module.exports = {
@@ -29,7 +29,7 @@ module.exports = {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        await interaction.reply({ content: `💻 Hacking ${user.username}...`, ephemeral: true });
+        await interaction.reply({ content: `💻 Hacking ${user.username}...`, ephemeral: false });
 
         await wait(1000);
         await interaction.editReply({ content: `Searching for user information...` });
@@ -51,8 +51,8 @@ module.exports = {
 
         await wait(1000);
         try {
-            const response = await fetch(`https://some-random-api.com/bottoken?${user.id}`);
-            const json = await response.json();
+            const response = await axios.get(`https://some-random-api.com/bottoken?${user.id}`);
+            const json = response.data;
             await interaction.editReply({ content: `The user's Discord account token was found!\n🔧 Token: \`${json.token}\`` });
         } catch (error) {
             await interaction.editReply({ content: `Failed to retrieve Discord token.` });
@@ -64,11 +64,16 @@ module.exports = {
         await wait(1000);
         await interaction.editReply({ content: `${user.username} has been successfully hacked! All the user's information was sent to your DM.` });
 
-        await interaction.user.send({
-            embeds: [{
-                title: '😂 Pranked',
-                image: { url: "https://media1.tenor.com/images/05006ed09075a0d6965383797c3cea00/tenor.gif?itemid=17987788" }
-            }]
-        });
+        try {
+            await interaction.user.send({
+                embeds: [{
+                    title: '😂 Pranked',
+                    image: { url: "https://media1.tenor.com/images/05006ed09075a0d6965383797c3cea00/tenor.gif?itemid=17987788" }
+                }]
+            });
+        } catch (error) {
+            console.error('Failed to send DM:', error);
+            await interaction.followUp({ content: "I couldn't send you a DM. Make sure you have DMs enabled for this server.", ephemeral: true });
+        }
     }
 };
