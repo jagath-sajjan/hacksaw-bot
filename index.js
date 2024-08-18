@@ -1,17 +1,30 @@
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
+if (typeof globalThis.ReadableStream === 'undefined') {
+    const { ReadableStream } = require('stream/web');
+    globalThis.ReadableStream = ReadableStream;
+}
+
+const { 
+    Client, 
+    GatewayIntentBits, 
+    Collection,
+    REST,
+    Routes
+} = require('discord.js');
+
+const axios = require('axios');
+const { exec } = require('node:child_process');
+const crypto = require('crypto');
+const GIFEncoder = require('gifencoder');
+const { createCanvas } = require('canvas');
+const { format, utcToZonedTime } = require('date-fns-tz');
+const QRCode = require('qrcode');
 const express = require('express');
-const http = require('http');
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+const giphy = require('giphy-api')('zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho');
+const https = require('https');
+const path = require('path');
+const fetch = require('node-fetch');
+const figlet = require('figlet');
+const fs = require('fs');
 
 const client = new Client({
     intents: [
@@ -36,40 +49,85 @@ for (const file of commandFiles) {
     }
 }
 
-client.once('ready', () => {
+function pingServer() {
+    https.get('https://morse-w4z7.onrender.com', (resp) => {
+        console.log('Ping successful');
+    }).on('error', (err) => {
+        console.log('Ping failed: ' + err.message);
+    });
+}
+
+// Ping every 14 minutes
+setInterval(pingServer, 14 * 60 * 1000);
+
+client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
+
+    // Set bot status to idle
     client.user.setPresence({
         status: 'idle',
         activities: [{
             name: 'NEW TECH TRENDS',
-            type: 'WATCHING',
+            type: 'WATCHING', // You can choose from PLAYING, STREAMING, LISTENING, WATCHING
         }],
     });
+
+    try {
+        const commands = [];
+        for (const file of commandFiles) {
+            const command = require(`./commands/${file}`);
+            commands.push(command);
+        }
+
+        const rest = new REST({ version: '9' }).setToken(client.token);
+        await rest.put(
+            Routes.applicationCommands(client.user.id),
+            { body: commands }
+        );
+        console.log('Successfully registered application commands.');
+    } catch (error) {
+        console.error('Error registering slash commands:', error);
+    }
 });
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
+    if (!interaction.inGuild()) {
+        await interaction.reply("This bot only works in servers, not private messages.");
+        return;
+    }
+
     const command = client.commands.get(interaction.commandName);
 
-    if (!command) return;
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
 
     try {
         await command.execute(interaction);
     } catch (error) {
-        console.error(error);
-        await interaction.reply({ content: 'There was an error executing this command!', ephemeral: true });
+        console.error(`Error executing command ${interaction.commandName}:`, error);
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
+        } else if (interaction.deferred) {
+            await interaction.editReply({ content: 'An error occurred while processing your request.' });
+        }
     }
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+const app = express();
+const port = process.env.PORT || 8080;
 
-const server = http.createServer(app);
+app.use(express.static(path.join(__dirname)));
 
-server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-setInterval(() => {
-    http.get(`http://${process.env.RENDER_EXTERNAL_HOSTNAME}`);
-}, 600000); // Ping every 10 minutes (600000 ms)
+app.listen(port, () => {
+    console.log(`Morse app listening on port ${port}`);
+});
+
+client.login(process.env.DISCORD_BOT_TOKEN);
