@@ -64,7 +64,7 @@ let lastPingTime = Date.now();
 
 module.exports = async (req, res) => {
     try {
-        if (!client || Date.now() - lastPingTime > 60000) { // Reinitialize every minute
+        if (!client || Date.now() - lastPingTime > 60000) { 
             client = await initializeBot();
             lastPingTime = Date.now();
         }
