@@ -28,6 +28,7 @@ const giphy = require('giphy-api')('zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho');
 const https = require('https');
 const path = require('path');
 const fetch = require('node-fetch');
+const figlet = require('figlet');
 const fs = require('fs');
 
 const footerText = 'Made By Jagath🩵';
@@ -129,6 +130,18 @@ client.on('ready', async () => {
                             name: 'keyword',
                             type: ApplicationCommandOptionType.String,
                             description: 'The keyword to search for',
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: 'ascii',
+                    description: 'Generate ASCII art from text',
+                    options: [
+                        {
+                            name: 'text',
+                            type: ApplicationCommandOptionType.String,
+                            description: 'The text to convert to ASCII art',
                             required: true
                         }
                     ]
@@ -390,6 +403,9 @@ client.on('interactionCreate', async interaction => {
             case 'morse':
                 await handleMorse(interaction);
                 break;
+            case 'ascii':
+                await handleAscii(interaction);
+                break;    
             case 'demorse':
                 await handleDemorse(interaction);
                 break;
