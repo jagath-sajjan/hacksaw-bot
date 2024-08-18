@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const http = require('http');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -40,8 +41,8 @@ client.once('ready', () => {
     client.user.setPresence({
         status: 'idle',
         activities: [{
-            name: 'TECHNOLOGY',
-            type: 'PLAYING',
+            name: 'NEW TECH TRENDS',
+            type: 'WATCHING',
         }],
     });
 });
@@ -63,6 +64,12 @@ client.on('interactionCreate', async interaction => {
 
 client.login(process.env.DISCORD_BOT_TOKEN);
 
-app.listen(port, () => {
+const server = http.createServer(app);
+
+server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+setInterval(() => {
+    http.get(`http://${process.env.RENDER_EXTERNAL_HOSTNAME}`);
+}, 600000); // Ping every 10 minutes (600000 ms)
