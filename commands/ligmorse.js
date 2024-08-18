@@ -5,6 +5,7 @@ const { createCanvas } = require('canvas');
 
 module.exports = {
     name: 'ligmorse', // Add this line to define the name property
+    description: 'Show Morse code with a visual display',
     data: new SlashCommandBuilder()
         .setName('ligmorse')
         .setDescription('Show Morse code with a visual display')
