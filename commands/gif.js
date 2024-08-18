@@ -18,7 +18,11 @@ module.exports = {
             const keyword = interaction.options.getString('keyword');
             console.log(`Searching for GIF with keyword: ${keyword}`);
 
-            const apiKey = 'zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho'; // Your Giphy API key
+            const apiKey = process.env.GIPHY_API_KEY; // Get API key from environment variable
+            if (!apiKey) {
+                throw new Error('GIPHY_API_KEY is not set in the environment variables');
+            }
+
             const response = await axios.get(`https://api.giphy.com/v1/gifs/search`, {
                 params: {
                     api_key: apiKey,
@@ -56,7 +60,9 @@ module.exports = {
             console.error('Error stack:', error.stack);
 
             let errorMessage = 'An error occurred while searching for the GIF. ';
-            if (error.response && error.response.status === 403) {
+            if (error.message === 'GIPHY_API_KEY is not set in the environment variables') {
+                errorMessage += 'API key is missing. Please contact the bot administrator.';
+            } else if (error.response && error.response.status === 403) {
                 errorMessage += 'API key may be invalid. Please contact the bot administrator.';
             } else if (error.code === 'ECONNABORTED') {
                 errorMessage += 'The request timed out. Please try again later.';
