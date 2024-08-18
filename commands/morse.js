@@ -3,6 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'morse', // Add this line
+    description: 'Convert text to Morse code',
     data: new SlashCommandBuilder()
         .setName('morse')
         .setDescription('Convert text to Morse code')
