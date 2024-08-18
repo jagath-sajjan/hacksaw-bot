@@ -23,6 +23,7 @@
     "@discordjs/opus": "^0.7.0",
     "figlet": "^1.6.0",
     "node-fetch": "^2.6.9",
-    "generate-password": "^1.7.0"
+    "generate-password": "^1.7.0",
+    "popcat-wrapper": "^1.5.4"
   }
 }
