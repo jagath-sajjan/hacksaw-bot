@@ -41,39 +41,44 @@ function initializeBot() {
         });
     });
 
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
+    client.on('interactionCreate', async interaction => {
+        if (!interaction.isCommand()) return;
 
-    if (!interaction.inGuild()) {
-        await interaction.reply("This bot only works in servers, not private messages.");
-        return;
-    }
-
-    const command = client.commands.get(interaction.commandName);
-
-    if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        return;
-    }
-
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(`Error executing command ${interaction.commandName}:`, error);
-        if (!interaction.replied && !interaction.deferred) {
-            await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
-        } else if (interaction.deferred) {
-            await interaction.editReply({ content: 'An error occurred while processing your request.' });
+        if (!interaction.inGuild()) {
+            await interaction.reply("This bot only works in servers, not private messages.");
+            return;
         }
-    }
-});
 
+        const command = client.commands.get(interaction.commandName);
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+        if (!command) {
+            console.error(`No command matching ${interaction.commandName} was found.`);
+            return;
+        }
+
+        try {
+            await command.execute(interaction);
+        } catch (error) {
+            console.error(`Error executing command ${interaction.commandName}:`, error);
+            if (!interaction.replied && !interaction.deferred) {
+                await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
+            } else if (interaction.deferred) {
+                await interaction.editReply({ content: 'An error occurred while processing your request.' });
+            }
+        }
+    });
+
+    client.login(process.env.DISCORD_BOT_TOKEN);
+}
 
 module.exports = async (req, res) => {
-    if (!client) {
-        initializeBot();
+    try {
+        if (!client) {
+            initializeBot();
+        }
+        res.status(200).send('Bot is running!');
+    } catch (error) {
+        console.error('Error in serverless function:', error);
+        res.status(500).send('Internal Server Error');
     }
-    res.status(200).send('Bot is running!');
 };
