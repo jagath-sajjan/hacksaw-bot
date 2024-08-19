@@ -22,7 +22,7 @@ module.exports = {
                 { name: 'Decoded Text', value: decodedText || 'Unable to decode' }
             )
             .setColor('Purple')
-            .setFooter({ text: 'Made By Jagath🩵' });
+            .setFooter({ text: 'HackSaw Demorse API.', iconURL: interaction.client.user.displayAvatarURL() });
 
         await interaction.reply({ embeds: [embed] });
     },
