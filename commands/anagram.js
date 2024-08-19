@@ -41,7 +41,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle(`Anagrams for "${interaction.options.getString('input')}"`)
                 .setColor('Green')
-                .setFooter({ text: 'HackSaw Anagram API.', iconURL: interaction.client.user.displayAvatarURL() });
+                .setFooter({ text: 'HackSaw Anagram API', iconURL: interaction.client.user.displayAvatarURL() });
 
             if (filteredAnagrams.length > 0) {
                 embed.setDescription(filteredAnagrams.slice(0, 20).join(', ') + (filteredAnagrams.length > 20 ? '...' : ''));
