@@ -55,7 +55,7 @@ module.exports = {
             .setDescription(`Here's your generated password:`)
             .addFields({ name: 'Password', value: `||${password}||` })
             .setColor('Green')
-            .setFooter({ text: 'HackSaw Pass-Gen API.', iconURL: interaction.client.user.displayAvatarURL() });
+            .setFooter({ text: 'HackSaw Pass-Gen API', iconURL: interaction.client.user.displayAvatarURL() });
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
     },
