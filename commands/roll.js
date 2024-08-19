@@ -4,14 +4,14 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     name: 'roll',
     description: 'Roll a die',
-    data: new SlashCommandBuilder()
-        .setName('roll')
-        .setDescription('Roll a die')
-        .addIntegerOption(option =>
-            option.setName('sides')
-                .setDescription('Number of sides on the die')
-                .setRequired(true)),
-
+    options: [
+        {
+            name: 'sides',
+            type: 4,
+            description: 'Number of sides on the die',
+            required: true
+        }
+    ],
     async execute(interaction) {
         const sides = interaction.options.getInteger('sides');
 
