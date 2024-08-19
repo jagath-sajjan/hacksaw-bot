@@ -35,7 +35,8 @@ module.exports = {
                     { name: "Wind", value: `${current.winddisplay}`, inline: true },
                     { name: "Feels like", value: `${current.feelslike}°`, inline: true },
                     { name: "Humidity", value: `${current.humidity}%`, inline: true }
-                );
+                )
+                 .setFooter({ text: 'HackSaw Weather API.', iconURL: interaction.client.user.displayAvatarURL() });
 
             interaction.reply({ embeds: [embed] });
         });
