@@ -30,7 +30,8 @@ module.exports = {
                     { name: "🏷️┇Genre", value: r.genre, inline: true },
                     { name: "💵┇Price", value: r.price, inline: true },
                     { name: "⏰┇Release Date", value: `<t:${Math.round(new Date(r.release_date).getTime() / 1000)}>`, inline: true }
-                );
+                )
+                 .setFooter({ text: 'HackSaw I-Tunes API.', iconURL: interaction.client.user.displayAvatarURL() });
 
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
