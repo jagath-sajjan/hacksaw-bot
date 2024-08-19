@@ -23,7 +23,7 @@ module.exports = {
                 { name: 'Morse Code', value: morseCode }
             )
             .setColor('Green')
-            .setFooter({ text: 'HackSaw Morse API.', iconURL: interaction.client.user.displayAvatarURL() });
+            .setFooter({ text: 'HackSaw Morse API', iconURL: interaction.client.user.displayAvatarURL() });
 
         await interaction.reply({ embeds: [embed] });
     },
