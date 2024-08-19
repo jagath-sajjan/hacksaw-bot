@@ -4,16 +4,16 @@ const GIFEncoder = require('gifencoder');
 const { createCanvas } = require('canvas');
 
 module.exports = {
-    name: 'ligmorse', // Add this line to define the name property
+    name: 'ligmorse',
     description: 'Show Morse code with a visual display',
-    data: new SlashCommandBuilder()
-        .setName('ligmorse')
-        .setDescription('Show Morse code with a visual display')
-        .addStringOption(option =>
-            option.setName('input')
-                .setDescription('Text or Morse code to display')
-                .setRequired(true)),
-
+    options: [
+        {
+            name: 'input',
+            type: 3,
+            description: 'Text or Morse code to display',
+            required: true
+        }
+    ],
     async execute(interaction) {
         await interaction.deferReply();
         try {
