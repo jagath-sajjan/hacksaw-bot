@@ -35,7 +35,7 @@ module.exports = {
                         { name: 'Timezone', value: data.timezone || 'N/A', inline: true }
                     )
                     .setColor('Green')
-                    .setFooter({ text: 'Made By Jagath🩵' });
+                    .setFooter({ text: 'HackSaw Internet Protocol API.', iconURL: interaction.client.user.displayAvatarURL() });
 
                 await interaction.editReply({ embeds: [embed] });
             } else {
