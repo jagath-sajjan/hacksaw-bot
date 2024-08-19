@@ -28,7 +28,8 @@ module.exports = {
                     { name: "💬┇Bio", value: r.bio || 'N/A', inline: true },
                     { name: "📁┇Public Repositories", value: r.public_repos.toString(), inline: true },
                     { name: "⏰┇Created At", value: `<t:${Math.round(new Date(r.created_at).getTime() / 1000)}>`, inline: true }
-                );
+                )
+                .setFooter({ text: 'HackSaw Dictionary API.', iconURL: interaction.client.user.displayAvatarURL() });
 
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
