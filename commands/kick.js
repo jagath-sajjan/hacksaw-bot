@@ -70,7 +70,7 @@ module.exports = {
                 )
                 .setColor('#FF4136')
                 .setTimestamp()
-                .setFooter({ text: 'Made By Jagath🩵', iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: 'hackSaw Kick API', iconURL: interaction.client.user.displayAvatarURL() })
                 .setImage('https://media.tenor.com/Oj3Ht_Ql1UIAAAAC/spongebob-squarepants-get-out.gif');
 
             try {
