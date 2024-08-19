@@ -17,7 +17,7 @@ module.exports = {
                     { name: 'WebSocket Latency', value: `${wsLatency}ms`, inline: true }
                 )
                 .setColor('Green')
-                .setFooter({ text: 'Pinging HackSaw API.', iconURL: interaction.client.user.displayAvatarURL() });
+                .setFooter({ text: 'Pinging HackSaw API', iconURL: interaction.client.user.displayAvatarURL() });
 
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
