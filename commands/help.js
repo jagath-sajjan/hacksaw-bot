@@ -51,7 +51,7 @@ module.exports = {
                 .setTitle('Help Menu')
                 .setDescription('Please select a category from the dropdown menu below to see available commands.')
                 .setColor('Green')
-                .setFooter({ text: 'HackSaw Help API.', iconURL: interaction.client.user.displayAvatarURL() });
+                .setFooter({ text: 'HackSaw Help API', iconURL: interaction.client.user.displayAvatarURL() });
 
             const response = await interaction.editReply({
                 embeds: [initialEmbed],
