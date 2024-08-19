@@ -14,7 +14,7 @@ module.exports = {
             .setTitle('Coin Flip Result')
             .setDescription(`The coin landed on: **${result}**`)
             .setColor('Random')
-            .setFooter({ text: 'HackSaw Coin-Flip API.', iconURL: interaction.client.user.displayAvatarURL() });
+            .setFooter({ text: 'HackSaw Coin-Flip API', iconURL: interaction.client.user.displayAvatarURL() });
 
         await interaction.reply({ embeds: [embed] });
     },
