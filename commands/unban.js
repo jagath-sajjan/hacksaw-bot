@@ -40,7 +40,7 @@ module.exports = {
                 .setColor('#00FF00')
                 .setThumbnail(unbannedUser.displayAvatarURL({ dynamic: true }))
                 .setTimestamp()
-                .setFooter({ text: 'Made By Jagath🩵', iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: 'HackSaw Unban API', iconURL: interaction.client.user.displayAvatarURL() })
                 .setImage('https://tenor.com/view/you-are-now-unbanned-gif-16231818107758749185');
 
             const reply = await interaction.reply({ embeds: [unbanEmbed], fetchReply: true });
