@@ -2,16 +2,16 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    name: 'morse', // Add this line
+    name: 'morse',
     description: 'Convert text to Morse code',
-    data: new SlashCommandBuilder()
-        .setName('morse')
-        .setDescription('Convert text to Morse code')
-        .addStringOption(option =>
-            option.setName('text')
-                .setDescription('The text to convert to Morse code')
-                .setRequired(true)),
-
+    options: [
+        {
+            name: 'text',
+            type: 3,
+            description: 'The text to convert to Morse code',
+            required: true
+        }
+    ],
     async execute(interaction) {
         const text = interaction.options.getString('text');
         const morseCode = textToMorse(text);
