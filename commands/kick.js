@@ -51,7 +51,7 @@ module.exports = {
                 .setColor('#FF4136')
                 .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
                 .setTimestamp()
-                .setFooter({ text: 'Made By Jagath🩵', iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: 'HackSaw Kick API', iconURL: interaction.client.user.displayAvatarURL() })
                 .setImage('https://media.discordapp.net/attachments/1118630713068818562/1118630713362419732/kick.gif');
 
             const reply = await interaction.reply({ embeds: [kickEmbed], fetchReply: true });
