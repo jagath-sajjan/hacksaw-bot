@@ -1,8 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { format, utcToZonedTime } = require('date-fns-tz');
 
-const footerText = 'Made By Jagath🩵';
-
 module.exports = {
     name: 'time',
     description: 'Get the current time in any timezone',
@@ -36,7 +34,7 @@ module.exports = {
                 .setTitle(`Current Time in ${timezone}`)
                 .setDescription(`The current time is: **${currentTime}**`)
                 .setColor('Green')
-                .setFooter({ text: footerText });
+                .setFooter({ text: 'HackSaw Time API', iconURL: interaction.client.user.displayAvatarURL() });
 
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
