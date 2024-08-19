@@ -22,6 +22,7 @@ module.exports = {
                 .setTitle(`🎶・${r.name}`)
                 .setThumbnail(r.thumbnail)
                 .setURL(r.url)
+                .setFooter({ text: 'HackSaw I-Tunes API', iconURL: interaction.client.user.displayAvatarURL() });
                 .addFields(
                     { name: "💬┇Name", value: r.name, inline: true },
                     { name: "🎤┇Artist", value: r.artist, inline: true },
@@ -30,8 +31,7 @@ module.exports = {
                     { name: "🏷️┇Genre", value: r.genre, inline: true },
                     { name: "💵┇Price", value: r.price, inline: true },
                     { name: "⏰┇Release Date", value: `<t:${Math.round(new Date(r.release_date).getTime() / 1000)}>`, inline: true }
-                )
-                 .setFooter({ text: 'HackSaw I-Tunes API.', iconURL: interaction.client.user.displayAvatarURL() });
+                );
 
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
