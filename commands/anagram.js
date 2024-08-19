@@ -41,8 +41,8 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle(`Anagrams for "${interaction.options.getString('input')}"`)
                 .setColor('Green')
-                .setFooter({ text: 'Made By Jagath🩵', iconURL: interaction.client.user.displayAvatarURL() })
-                .setTimestamp(Date.now() + ms(timeAdded));
+                .setFooter({ text: 'HackSaw Anagram API.', iconURL: interaction.client.user.displayAvatarURL() })
+                    .setTimestamp(Date.now() + ms(timeAdded));
 
             if (filteredAnagrams.length > 0) {
                 embed.setDescription(filteredAnagrams.slice(0, 20).join(', ') + (filteredAnagrams.length > 20 ? '...' : ''));
