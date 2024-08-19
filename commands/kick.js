@@ -42,16 +42,24 @@ module.exports = {
             await targetMember.kick(reason);
 
             const embed = new EmbedBuilder()
-                .setTitle('User Kicked')
+                .setTitle('👢 User Kicked')
+                .setDescription(`${targetUser.tag} has been kicked from the server.`)
                 .addFields(
-                    { name: 'Kicked User', value: targetUser.tag },
-                    { name: 'Kicked By', value: interaction.user.tag },
-                    { name: 'Reason', value: reason }
+                    { name: '👤 Kicked User', value: targetUser.tag, inline: true },
+                    { name: '🛡️ Kicked By', value: interaction.user.tag, inline: true },
+                    { name: '📝 Reason', value: reason }
                 )
-                .setColor('Red')
-                .setFooter({ text: 'Made By Jagath🩵' });
+                .setColor('#FF4136')
+                .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
+                .setTimestamp()
+                .setFooter({ text: 'Made By Jagath🩵', iconURL: interaction.client.user.displayAvatarURL() });
 
-            await interaction.reply({ embeds: [embed] });
+            const reply = await interaction.reply({ embeds: [embed], fetchReply: true });
+
+            // Delete the embed after 20 seconds
+            setTimeout(() => {
+                reply.delete().catch(console.error);
+            }, 20000);
         } catch (error) {
             console.error('Error kicking user:', error);
             await interaction.reply({ content: 'An error occurred while trying to kick the user.', ephemeral: true });
