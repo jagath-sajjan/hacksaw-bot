@@ -25,7 +25,7 @@ module.exports = {
             .setTitle('🎲 Dice Roll')
             .setDescription(`You rolled a **${result}** on a ${sides}-sided die.`)
             .setColor('Random')
-            .setFooter({ text: 'Made By Jagath🩵' });
+            .setFooter({ text: 'HackSaw Roll API.', iconURL: interaction.client.user.displayAvatarURL() });
 
         await interaction.reply({ embeds: [embed] });
     },
