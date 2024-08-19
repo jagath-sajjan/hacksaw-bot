@@ -25,7 +25,7 @@ module.exports = {
                 .setTitle('Morse Code Reference')
                 .setDescription('Here\'s a comprehensive list of Morse code for alphabets, numbers, and common symbols:')
                 .setColor('Green')
-                .setFooter({ text: 'HackSaw Learn API.', iconURL: interaction.client.user.displayAvatarURL() });
+                .setFooter({ text: 'HackSaw Learn API', iconURL: interaction.client.user.displayAvatarURL() });
 
             let alphabets = '';
             let numbers = '';
