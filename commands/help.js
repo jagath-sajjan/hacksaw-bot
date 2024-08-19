@@ -75,7 +75,7 @@ module.exports = {
                     .setTitle(`${selectedCategory.name} Commands`)
                     .setDescription(`Here are the commands in the ${selectedCategory.name} category:\n\n${commandList}`)
                     .setColor('Green')
-                    .setFooter({ text: 'Made By Jagath🩵' });
+                    .setFooter({ text: 'HackSaw Help API.', iconURL: interaction.client.user.displayAvatarURL() });
 
                 await i.update({ embeds: [categoryEmbed], components: [row] });
             });
