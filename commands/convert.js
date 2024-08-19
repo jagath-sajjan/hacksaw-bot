@@ -69,7 +69,7 @@ module.exports = {
                 .setTitle('Unit Conversion')
                 .setDescription(`${value} ${fromUnit} = ${result} ${toUnit}`)
                 .setColor('Green')
-                .setFooter({ text: 'Made By Jagath🩵' });
+                .setFooter({ text: 'HackSaw Convert API.', iconURL: interaction.client.user.displayAvatarURL() });
 
             await interaction.reply({ embeds: [embed] });
         } else {
