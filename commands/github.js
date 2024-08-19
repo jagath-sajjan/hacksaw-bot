@@ -22,7 +22,7 @@ module.exports = {
                 .setTitle(`🏷️・${r.name}`)
                 .setThumbnail(r.avatar)
                 .setURL(r.url)
-                .setFooter({ text: 'HackSaw Github API.', iconURL: interaction.client.user.displayAvatarURL() });
+                .setFooter({ text: 'HackSaw Github API', iconURL: interaction.client.user.displayAvatarURL() })
                 .addFields(
                     { name: "💬┇Name", value: r.name, inline: true },
                     { name: "🧑‍💼┇Company", value: r.company || 'N/A', inline: true },
