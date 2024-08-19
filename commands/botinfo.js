@@ -9,7 +9,7 @@ module.exports = {
                 .setColor('#0099ff')
                 .setTitle('Morse Bot Information')
                 .setThumbnail('https://i.ibb.co/kQd588T/image.png')
-                .setFooter({ text: 'HackSaw Bot Info API', iconURL: interaction.client.user.displayAvatarURL() }); 
+                .setFooter({ text: 'HackSaw Bot Info API', iconURL: interaction.client.user.displayAvatarURL() })
                 .addFields(
                     { name: 'Bot Name', value: 'Morse', inline: true },
                     { name: 'Language', value: 'Javascript', inline: true },
