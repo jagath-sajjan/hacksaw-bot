@@ -23,7 +23,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle(`Definition of "${word}"`)
                     .setColor('Green')
-                    .setFooter({ text: 'HackSaw Dictionary API.', iconURL: interaction.client.user.displayAvatarURL() });
+                    .setFooter({ text: 'HackSaw Dictionary API', iconURL: interaction.client.user.displayAvatarURL() });
 
                 data.meanings.forEach((meaning, index) => {
                     if (index < 3) {
