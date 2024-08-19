@@ -19,7 +19,7 @@ const { createCanvas } = require('canvas');
 const { format, utcToZonedTime } = require('date-fns-tz');
 const QRCode = require('qrcode');
 const express = require('express');
-const giphy = require('giphy-api')('zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho');
+const giphy = require('giphy-api')
 const https = require('https');
 const path = require('path');
 const fetch = require('node-fetch');
@@ -128,14 +128,6 @@ client.on('interactionCreate', async interaction => {
 
 const app = express();
 const port = process.env.PORT || 8080;
-
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 app.listen(port, () => {
     console.log(`Morse app listening on port ${port}`);
