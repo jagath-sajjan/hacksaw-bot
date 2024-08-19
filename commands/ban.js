@@ -42,7 +42,7 @@ module.exports = {
                 .setThumbnail(userToBan.displayAvatarURL({ dynamic: true }))
                 .setImage('https://media.tenor.com/ZVbWtHIhQGcAAAAC/bane-no.gif')
                 .setTimestamp()
-                .setFooter({ text: 'HackSaw Ban API.', iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: 'HackSaw Ban API', iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp(Date.now() + ms(timeAdded));
 
             const reply = await interaction.reply({ embeds: [embed], fetchReply: true });
