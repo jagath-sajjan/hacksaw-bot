@@ -31,6 +31,11 @@ module.exports = {
                     name: '🎲 Fun & Games',
                     value: 'fun',
                     commands: ['coin-flip', 'roll', 'dino', 'fact', 'gif', 'hack', 'howgay', 'kill', 'lovemeter', 'roast', 'simp-rate', 'stankrate']
+                },
+                {
+                    name: '🛠️ Moderation',
+                    value: 'moderation',
+                    commands: ['kick', 'ban', 'unban']
                 }
             ];
 
