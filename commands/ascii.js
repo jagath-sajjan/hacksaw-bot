@@ -42,7 +42,7 @@ module.exports = {
                     .setTitle('💬 ASCII Art')
                     .setDescription(`\`\`\`${data}\`\`\``)
                     .setColor('Random')
-                    .setFooter({ text: 'HackSaw Ascii API.', iconURL: interaction.client.user.displayAvatarURL() })
+                    .setFooter({ text: 'HackSaw Ascii API', iconURL: interaction.client.user.displayAvatarURL() })
                     .setTimestamp(Date.now() + ms(timeAdded));
 
                 embed.addFields({ name: 'Note', value: 'Use a computer/laptop to view the results properly' });
