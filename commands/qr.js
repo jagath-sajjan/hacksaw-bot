@@ -35,7 +35,7 @@ module.exports = {
                     description: `Content: ${content}`,
                     image: { url: 'attachment://qrcode.png' },
                     color: 0x00FF00,
-                    .setFooter({ text: 'HackSaw QR API.', iconURL: interaction.client.user.displayAvatarURL() })
+                    footer: ({ text: 'HackSaw QR API.', iconURL: interaction.client.user.displayAvatarURL() })
                 };
 
                 await interaction.editReply({ embeds: [embed], files: [qrAttachment] });
