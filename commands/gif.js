@@ -42,7 +42,7 @@ module.exports = {
                     .setTitle(`GIF Search: ${keyword}`)
                     .setImage(gifUrl)
                     .setColor('Random')
-                    .setFooter({ text: 'Made By Jagath🩵' });
+                    .setFooter({ text: 'HackSaw GIF API.', iconURL: interaction.client.user.displayAvatarURL() });
 
                 await interaction.editReply({ embeds: [embed] });
             } else {
