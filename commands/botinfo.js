@@ -15,8 +15,7 @@ module.exports = {
                     { name: 'Hosted On', value: 'Raspberry Pi 3 [Banglore/IN]', inline: true },
                     { name: 'Creator', value: '[GitHub](https://github.com/jagath-sajjan) | [YouTube](https://youtube.com/@nobooklad)', inline: false }
                 )
-                .setFooter({ text: 'HackSaw Bot Info API.', iconURL: interaction.client.user.displayAvatarURL() })
-                .setTimestamp(Date.now() + ms(timeAdded));
+                .setFooter({ text: 'HackSaw Bot Info API.', iconURL: interaction.client.user.displayAvatarURL() });
 
             const row = new ActionRowBuilder()
                 .addComponents(
