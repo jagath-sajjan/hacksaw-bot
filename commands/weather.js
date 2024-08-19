@@ -28,7 +28,6 @@ module.exports = {
                 .setTitle(`☀️・Weather - ${current.skytext}`)
                 .setDescription(`Weather forecast for ${current.observationpoint}`)
                 .setThumbnail(current.imageUrl)
-                .setFooter({ text: 'HackSaw Weather API', iconURL: interaction.client.user.displayAvatarURL() }); 
                 .addFields(
                     { name: "Timezone", value: `UTC${location.timezone}`, inline: true },
                     { name: "Degree Type", value: `Celsius`, inline: true },
