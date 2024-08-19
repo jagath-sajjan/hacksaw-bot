@@ -4,14 +4,14 @@ const { AttachmentBuilder } = require('discord.js');
 module.exports = {
     name: 'smorse',
     description: 'Play Morse code audio',
-    data: new SlashCommandBuilder()
-        .setName('smorse')
-        .setDescription('Play Morse code audio')
-        .addStringOption(option =>
-            option.setName('input')
-                .setDescription('Text or Morse code to play')
-                .setRequired(true)),
-
+    options: [
+        {
+            name: 'input',
+            type: 3,
+            description: 'Text or Morse code to play',
+            required: true
+        }
+    ],
     async execute(interaction) {
         await interaction.deferReply();
         try {
