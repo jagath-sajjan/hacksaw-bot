@@ -22,7 +22,7 @@ module.exports = {
                 .setTitle(`🎶・${r.name}`)
                 .setThumbnail(r.thumbnail)
                 .setURL(r.url)
-                .setFooter({ text: 'HackSaw I-Tunes API', iconURL: interaction.client.user.displayAvatarURL() });
+                .setFooter({ text: 'HackSaw I-Tunes API', iconURL: interaction.client.user.displayAvatarURL() })
                 .addFields(
                     { name: "💬┇Name", value: r.name, inline: true },
                     { name: "🎤┇Artist", value: r.artist, inline: true },
