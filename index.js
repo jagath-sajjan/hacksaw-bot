@@ -19,7 +19,7 @@ const { createCanvas } = require('canvas');
 const { format, utcToZonedTime } = require('date-fns-tz');
 const QRCode = require('qrcode');
 const express = require('express');
-const giphy = require('giphy-api');
+const giphy = require('giphy-api')('zSZRgLmqchF9XkNlDIaoXEt4xY6xK7ho');
 const https = require('https');
 const path = require('path');
 const fetch = require('node-fetch');
@@ -36,18 +36,32 @@ const client = new Client({
 
 client.commands = new Collection();
 
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-    if ('name' in command && 'execute' in command) {
-        client.commands.set(command.name, command);
-    } else {
-        console.log(`[WARNING] The command at ${filePath} is missing a required "name" or "execute" property.`);
+// Function to recursively read command files
+function readCommands(dir) {
+    const files = fs.readdirSync(dir, { withFileTypes: true });
+    for (const file of files) {
+        const filePath = path.join(dir, file.name);
+        if (file.isDirectory()) {
+            readCommands(filePath);
+        } else if (file.name.endsWith('.js')) {
+            try {
+                const command = require(filePath);
+                if ('name' in command && 'execute' in command) {
+                    client.commands.set(command.name, command);
+                    console.log(`Loaded command: ${command.name}`);
+                } else {
+                    console.log(`[WARNING] The command at ${filePath} is missing a required "name" or "execute" property.`);
+                }
+            } catch (error) {
+                console.error(`[ERROR] Failed to load command at ${filePath}:`, error);
+            }
+        }
     }
 }
+
+// Read all command files
+const commandsPath = path.join(__dirname, 'commands');
+readCommands(commandsPath);
 
 function pingServer() {
     https.get('https://morse-w4z7.onrender.com', (resp) => {
@@ -68,17 +82,12 @@ client.on('ready', async () => {
         status: 'idle',
         activities: [{
             name: 'NEW TECH TRENDS',
-            type: 'WATCHING', // You can choose from PLAYING, STREAMING, LISTENING, WATCHING
+            type: 'WATCHING',
         }],
     });
 
     try {
-        const commands = [];
-        for (const file of commandFiles) {
-            const command = require(`./commands/${file}`);
-            commands.push(command);
-        }
-
+        const commands = [...client.commands.values()];
         const rest = new REST({ version: '9' }).setToken(client.token);
         await rest.put(
             Routes.applicationCommands(client.user.id),
@@ -120,10 +129,10 @@ client.on('interactionCreate', async interaction => {
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Serve static files from the 'public' directory
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route for serving index.html
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
