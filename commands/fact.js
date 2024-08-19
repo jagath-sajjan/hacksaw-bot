@@ -14,7 +14,7 @@ module.exports = {
                 .setTitle('🥶 Random Fact')
                 .setDescription(fact)
                 .setColor('Random')
-                .setFooter({ text: 'HackSaw Fact API.', iconURL: interaction.client.user.displayAvatarURL() });
+                .setFooter({ text: 'HackSaw Fact API', iconURL: interaction.client.user.displayAvatarURL() });
 
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
