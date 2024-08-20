@@ -8,27 +8,47 @@ module.exports = {
         {
             name: 'coin',
             type: 3, // STRING
-            description: 'The cryptocurrency to check (e.g., bitcoin, btc)',
-            required: true
+            description: 'The cryptocurrency to check',
+            required: true,
+            choices: []
         },
         {
             name: 'interval',
             type: 3, // STRING
-            description: 'The time interval for historical data (e.g., 1h, 3h, 1d)',
+            description: 'The time interval for historical data',
             required: true,
             choices: [
-                { name: '2 hours', value: '2h' },
-                { name: '3 hours', value: '3h' },
-                { name: '1 day', value: '1d' },
-                { name: '1 week', value: '1w' }
+                { name: '1 minute', value: 'm1' },
+                { name: '5 minutes', value: 'm5' },
+                { name: '15 minutes', value: 'm15' },
+                { name: '30 minutes', value: 'm30' },
+                { name: '1 hour', value: 'h1' },
+                { name: '2 hours', value: 'h2' },
+                { name: '6 hours', value: 'h6' },
+                { name: '12 hours', value: 'h12' },
+                { name: '1 day', value: 'd1' }
             ]
         }
     ],
     async execute(interaction) {
-        const coin = interaction.options.getString('coin').toLowerCase();
-        const interval = interaction.options.getString('interval');
-        
         try {
+            // Fetch the list of available cryptocurrencies from CoinCap API
+            const { data: coinsData } = await axios.get('https://api.coincap.io/v2/assets');
+            if (!coinsData || !coinsData.data) {
+                await interaction.reply({ content: 'Could not fetch the list of available cryptocurrencies. Please try again later.', ephemeral: true });
+                return;
+            }
+
+            // Update the 'coin' option choices with the available cryptocurrencies
+            interaction.options.get('coin').choices = coinsData.data.map(coin => ({
+                name: `${coin.name} (${coin.symbol.toUpperCase()})`,
+                value: coin.id
+            }));
+
+            // Get the selected cryptocurrency and interval
+            const coin = interaction.options.getString('coin');
+            const interval = interaction.options.getString('interval');
+
             // Fetch cryptocurrency data from CoinCap API
             const { data } = await axios.get(`https://api.coincap.io/v2/assets/${coin}`);
             if (!data || !data.data) {
@@ -37,7 +57,7 @@ module.exports = {
             }
             const cryptoData = data.data;
             const priceInUsd = parseFloat(cryptoData.priceUsd); // Price in USD
-            
+
             // Fetch historical data for chart
             const historicalDataResponse = await axios.get(`https://api.coincap.io/v2/assets/${coin}/history?interval=${interval}`);
             if (!historicalDataResponse.data || !historicalDataResponse.data.data) {
@@ -47,7 +67,7 @@ module.exports = {
             const historicalData = historicalDataResponse.data.data;
             const labels = historicalData.map(entry => new Date(entry.time).toLocaleDateString());
             const prices = historicalData.map(entry => entry.priceUsd);
-            
+
             // Generate QuickChart URL
             const chartConfig = {
                 type: 'line',
@@ -92,7 +112,7 @@ module.exports = {
                 }
             };
             const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
-            
+
             // Create an embedded message with the cryptocurrency price information
             const embed = new EmbedBuilder()
                 .setTitle('💹 Crypto Price Information')
@@ -105,7 +125,7 @@ module.exports = {
                 .setImage(chartUrl) // Add chart image to the embed
                 .setFooter({ text: 'HackSaw Crypto API', iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
-            
+
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
             console.error('Error fetching crypto data:', error);
