@@ -34,16 +34,11 @@ module.exports = {
     ],
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
-        
-        // Load coins from the text file
-        const filePath = path.join(__dirname, 'coins.txt');
-        const fileContents = fs.readFileSync(filePath, 'utf-8');
-
-        // Split the file into lines and map each line to a coin object
-        const coins = fileContents.split('\n').map(line => {
-            const [name, value] = line.split(',');
-            return { name: name.trim(), value: value.trim() };
-        });
+        const coins = fs.readFileSync(path.join(__dirname, 'coins.txt'), 'utf8').split('\n')
+            .map(line => {
+                const [name, value] = line.split(',');
+                return { name, value };
+            });
 
         // Filter coins based on the focused value (what the user is typing)
         const filtered = coins.filter(coin => coin.name.toLowerCase().includes(focusedValue.toLowerCase())).slice(0, 25);
