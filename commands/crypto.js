@@ -1,7 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
 
 module.exports = {
     name: 'crypto',
@@ -34,42 +32,47 @@ module.exports = {
     ],
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
-        const coins = fs.readFileSync(path.join(__dirname, 'coins.txt'), 'utf8').split('\n')
-            .map(line => {
-                const [name, value] = line.split(',');
-                return { name, value };
-            });
+        try {
+            // Fetch list of coins from CoinGecko
+            const response = await axios.get('https://api.coingecko.com/api/v3/coins/list');
+            const coins = response.data;
 
-        // Filter coins based on the focused value (what the user is typing)
-        const filtered = coins.filter(coin => coin.name.toLowerCase().includes(focusedValue.toLowerCase())).slice(0, 25);
+            // Filter coins based on the focused value (what the user is typing)
+            const filtered = coins
+                .filter(coin => coin.name.toLowerCase().includes(focusedValue.toLowerCase()))
+                .slice(0, 25);
 
-        // Send autocomplete response with the filtered coins
-        await interaction.respond(filtered.map(coin => ({ name: coin.name, value: coin.value })));
+            // Send autocomplete response with the filtered coins
+            await interaction.respond(filtered.map(coin => ({ name: coin.name, value: coin.id })));
+        } catch (error) {
+            console.error('Error fetching coin list:', error);
+            await interaction.respond([]);
+        }
     },
     async execute(interaction) {
         try {
             // Get the selected cryptocurrency and interval
-            const coin = interaction.options.getString('coin');
+            const coinId = interaction.options.getString('coin');
             const interval = interaction.options.getString('interval');
 
-            // Fetch cryptocurrency data from CoinCap API
-            const { data } = await axios.get(`https://api.coincap.io/v2/assets/${coin}`);
-            if (!data || !data.data) {
-                await interaction.reply({ content: `Could not find data for ${coin}. Please check the coin name and try again.`, ephemeral: true });
+            // Fetch cryptocurrency data from CoinGecko
+            const { data } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`);
+            if (!data) {
+                await interaction.reply({ content: `Could not find data for ${coinId}. Please check the coin name and try again.`, ephemeral: true });
                 return;
             }
-            const cryptoData = data.data;
-            const priceInUsd = parseFloat(cryptoData.priceUsd); // Price in USD
+            const cryptoData = data;
+            const priceInUsd = parseFloat(cryptoData.market_data.current_price.usd); // Price in USD
 
             // Fetch historical data for chart
-            const historicalDataResponse = await axios.get(`https://api.coincap.io/v2/assets/${coin}/history?interval=${interval}`);
-            if (!historicalDataResponse.data || !historicalDataResponse.data.data) {
-                await interaction.reply({ content: `Could not fetch historical data for ${coin}.`, ephemeral: true });
+            const historicalDataResponse = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=30`);
+            if (!historicalDataResponse.data || !historicalDataResponse.data.prices) {
+                await interaction.reply({ content: `Could not fetch historical data for ${coinId}.`, ephemeral: true });
                 return;
             }
-            const historicalData = historicalDataResponse.data.data;
-            const labels = historicalData.map(entry => new Date(entry.time).toLocaleDateString());
-            const prices = historicalData.map(entry => entry.priceUsd);
+            const historicalData = historicalDataResponse.data.prices;
+            const labels = historicalData.map(entry => new Date(entry[0]).toLocaleDateString());
+            const prices = historicalData.map(entry => entry[1]);
 
             // Generate QuickChart URL
             const chartConfig = {
