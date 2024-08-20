@@ -64,7 +64,7 @@ const commandsPath = path.join(__dirname, 'commands');
 readCommands(commandsPath);
 
 function pingServer() {
-    https.get('https://morse-w4z7.onrender.com', (resp) => {
+    https.get('https://hacksaw-bot.onrender.com', (resp) => {
         console.log('Ping successful');
     }).on('error', (err) => {
         console.log('Ping failed: ' + err.message);
@@ -126,8 +126,17 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+const express = require('express');
+const path = require('path');
+
 const app = express();
 const port = process.env.PORT || 8080;
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.listen(port, () => {
     console.log(`Morse app listening on port ${port}`);
