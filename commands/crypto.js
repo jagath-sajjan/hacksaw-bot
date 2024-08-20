@@ -10,7 +10,7 @@ module.exports = {
             type: 3, // STRING
             description: 'The cryptocurrency to check',
             required: true,
-            choices: []
+            choices: [] // This will be populated later
         },
         {
             name: 'interval',
