@@ -23,22 +23,37 @@ module.exports = {
         const currency = interaction.options.getString('currency').toLowerCase();
 
         try {
-            const { data } = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=${currency}`);
+            // Fetch cryptocurrency data from CoinCap API
+            const { data } = await axios.get(`https://api.coincap.io/v2/assets/${coin}`);
 
-            if (!data[coin] || !data[coin][currency]) {
+            if (!data || !data.data) {
                 await interaction.reply({ content: `Could not find data for ${coin}. Please check the coin name and try again.`, ephemeral: true });
                 return;
             }
 
-            const priceInCurrency = data[coin][currency];
+            const cryptoData = data.data;
+            const priceInUsd = parseFloat(cryptoData.priceUsd); // Price in USD
+
+            // Convert USD to the desired currency using another API call to get the conversion rate
+            const currencyConversionResponse = await axios.get(`https://api.coincap.io/v2/rates/${currency}`);
+            if (!currencyConversionResponse.data || !currencyConversionResponse.data.data) {
+                await interaction.reply({ content: `Could not find data for ${currency}. Please check the currency name and try again.`, ephemeral: true });
+                return;
+            }
+
+            const conversionRate = parseFloat(currencyConversionResponse.data.data.rateUsd);
+            const priceInCurrency = priceInUsd / conversionRate;
+
+            // Create an embedded message with the cryptocurrency price information
             const embed = new EmbedBuilder()
                 .setTitle('💹 Crypto Price Information')
                 .addFields(
-                    { name: 'Cryptocurrency', value: coin.toUpperCase(), inline: true },
-                    { name: 'Price', value: `${priceInCurrency} ${currency.toUpperCase()}`, inline: true }
+                    { name: 'Cryptocurrency', value: cryptoData.name, inline: true },
+                    { name: 'Symbol', value: cryptoData.symbol.toUpperCase(), inline: true },
+                    { name: 'Price', value: `${priceInCurrency.toFixed(2)} ${currency.toUpperCase()}`, inline: true }
                 )
                 .setColor('#0099ff')
-                .setFooter({ text: 'Crypto Price Data', iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: 'HackSaw Crypto API', iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });
