@@ -71,8 +71,8 @@ function pingServer() {
     });
 }
 
-// Ping every 14 minutes
-setInterval(pingServer, 14 * 60 * 1000);
+// Ping every 10 minutes to keep the bot alive
+setInterval(pingServer, 10 * 60 * 1000);
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
