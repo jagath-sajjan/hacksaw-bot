@@ -10,7 +10,7 @@ module.exports = {
                 {
                     name: '📊 Utility',
                     value: 'utility',
-                    commands: ['ping', 'help', 'botinfo', 'time', 'ip', 'pass-gen', 'qr', 'convert', 'hexcolor', 'crypto', 'weather', 'token']
+                    commands: ['ping', 'help', 'botinfo', 'time', 'ip', 'pass-gen', 'qr', 'convert', 'hexcolor', 'weather', 'token']
                 },
                 {
                     name: '🔎 Search',
