@@ -3,71 +3,91 @@ const axios = require('axios');
 
 module.exports = {
     name: 'crypto',
-    description: 'Get the current price of a cryptocurrency and its historical chart',
+    description: 'Get the current price and historical chart of a cryptocurrency',
     options: [
         {
             name: 'coin',
             type: 3, // STRING
-            description: 'The cryptocurrency to check (e.g., BTC, USDT)',
-            required: true
+            description: 'The cryptocurrency to check',
+            required: true,
+            choices: [] // We'll populate this with available coins later
         },
         {
-            name: 'interval',
+            name: 'vs_currency',
             type: 3, // STRING
-            description: 'The time interval for historical data',
+            description: 'The currency to display the price in',
             required: true,
             choices: [
-                { name: '1 minute', value: '1m' },
-                { name: '5 minutes', value: '5m' },
-                { name: '15 minutes', value: '15m' },
-                { name: '30 minutes', value: '30m' },
-                { name: '1 hour', value: '1h' },
-                { name: '2 hours', value: '2h' },
-                { name: '6 hours', value: '6h' },
-                { name: '12 hours', value: '12h' },
-                { name: '1 day', value: '1d' }
+                { name: 'Indian Rupee', value: 'inr' },
+                { name: 'Euro', value: 'eur' },
+                { name: 'British Pound', value: 'gbp' },
+                { name: 'Japanese Yen', value: 'jpy' },
+                { name: 'US Dollar', value: 'usd' } 
+            ]
+        },
+        {
+            name: 'days',
+            type: 4, // INTEGER
+            description: 'The number of days to fetch historical data for',
+            required: true,
+            choices: [
+                { name: '7 days', value: 7 },
+                { name: '30 days', value: 30 },
+                { name: '90 days', value: 90 },
+                { name: '1 year', value: 365 }
             ]
         }
     ],
     async execute(interaction) {
         try {
-            const coin = interaction.options.getString('coin').toUpperCase();
-            const interval = interaction.options.getString('interval');
-
-            // Fetch cryptocurrency data from Binance API
-            const { data: priceData } = await axios.get('https://api.binance.com/api/v3/ticker/price', {
-                params: { symbol: coin }
+            // Fetch available coins from CoinGecko API
+            const { data: coinsData } = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
+                params: { vs_currency: 'usd', order: 'market_cap_desc', per_page: 200, page: 1 }
             });
 
-            if (!priceData || !priceData.price) {
+            // Update the coin option choices with the available coins
+            interaction.options.data.find(option => option.name === 'coin').choices = coinsData.map(coin => ({
+                name: `${coin.name} (${coin.symbol.toUpperCase()})`,
+                value: coin.id
+            }));
+
+            const coinId = interaction.options.getString('coin');
+            const vsCurrency = interaction.options.getString('vs_currency');
+            const days = interaction.options.getInteger('days');
+
+            // Fetch cryptocurrency data from CoinGecko API
+            const { data: coinData } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`, {
+                params: { vs_currency: vsCurrency }
+            });
+
+            if (!coinData || !coinData.market_data || !coinData.market_data.current_price) {
                 await interaction.reply({
-                    content: `Could not find data for ${coin}. Please check the coin symbol and ensure it is typed correctly.`,
+                    content: `Could not find data for ${coinId}. Please check the coin name and try again.`,
                     ephemeral: true
                 });
                 return;
             }
-            const priceInUsd = parseFloat(priceData.price); // Price in USD
+            const priceInCurrency = coinData.market_data.current_price[vsCurrency];
 
             // Fetch historical data for chart
-            const { data: historicalData } = await axios.get('https://api.binance.com/api/v3/klines', {
+            const { data: historicalData } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`, {
                 params: {
-                    symbol: coin,
-                    interval: interval,
-                    limit: 1000 // Adjust limit as needed
+                    vs_currency: vsCurrency,
+                    days: days
                 }
             });
 
-            if (!historicalData || historicalData.length === 0) {
+            if (!historicalData || !historicalData.prices) {
                 await interaction.reply({
-                    content: `Could not fetch historical data for ${coin}. Please check the coin symbol and ensure it is typed correctly.`,
+                    content: `Could not fetch historical data for ${coinId}. Please try again later.`,
                     ephemeral: true
                 });
                 return;
             }
 
             // Extract labels and prices for the chart
-            const labels = historicalData.map(entry => new Date(entry[0]).toLocaleDateString());
-            const prices = historicalData.map(entry => parseFloat(entry[4])); // Closing price
+            const labels = historicalData.prices.map(entry => new Date(entry[0]).toLocaleDateString());
+            const prices = historicalData.prices.map(entry => entry[1]);
 
             // Generate QuickChart URL
             const chartConfig = {
@@ -75,7 +95,7 @@ module.exports = {
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Price in USD',
+                        label: `Price in ${vsCurrency.toUpperCase()}`,
                         data: prices,
                         borderColor: '#ff6600',
                         backgroundColor: 'rgba(255, 102, 0, 0.2)',
@@ -91,7 +111,7 @@ module.exports = {
                         tooltip: {
                             callbacks: {
                                 label: function(tooltipItem) {
-                                    return `$${tooltipItem.raw.toFixed(2)}`;
+                                    return `${vsCurrency.toUpperCase()} ${tooltipItem.raw.toFixed(2)}`;
                                 }
                             }
                         }
@@ -100,13 +120,13 @@ module.exports = {
                         x: {
                             title: {
                                 display: true,
-                                text: `Date (${interval})`
+                                text: `Date (${days} days)`
                             }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Price (USD)'
+                                text: `Price (${vsCurrency.toUpperCase()})`
                             }
                         }
                     }
@@ -116,14 +136,16 @@ module.exports = {
 
             // Create an embedded message with the cryptocurrency price information
             const embed = new EmbedBuilder()
-                .setTitle('💹 Crypto Price Information')
+                .setTitle(`💹 ${coinData.name} (${coinData.symbol.toUpperCase()}) Price`)
                 .addFields(
-                    { name: 'Cryptocurrency', value: coin, inline: true },
-                    { name: 'Price', value: `$${priceInUsd.toFixed(2)}`, inline: true }
+                    { name: 'Price', value: `${vsCurrency.toUpperCase()} ${priceInCurrency.toFixed(2)}`, inline: true },
+                    { name: 'Market Cap', value: `${vsCurrency.toUpperCase()} ${coinData.market_data.market_cap[vsCurrency].toLocaleString()}`, inline: true },
+                    { name: 'All-Time High', value: `${vsCurrency.toUpperCase()} ${coinData.market_data.ath[vsCurrency].toFixed(2)}`, inline: true },
+                    { name: 'All-Time Low', value: `${vsCurrency.toUpperCase()} ${coinData.market_data.atl[vsCurrency].toFixed(2)}`, inline: true }
                 )
                 .setColor('#0099ff')
                 .setImage(chartUrl) // Add chart image to the embed
-                .setFooter({ text: 'HackSaw Crypto API', iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: 'CoinGecko API', iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });
