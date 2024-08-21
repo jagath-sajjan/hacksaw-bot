@@ -8,7 +8,7 @@ module.exports = {
         {
             name: 'coin',
             type: 3, // STRING
-            description: 'The cryptocurrency to check (e.g., btc, usdt)',
+            description: 'The cryptocurrency to check (e.g., BTC, USDT)',
             required: true
         },
         {
@@ -41,7 +41,7 @@ module.exports = {
 
             if (!priceData || !priceData.price) {
                 await interaction.reply({
-                    content: `Could not find data for ${coin}. Please check the coin symbol and ensure it is typed in all lowercase.`,
+                    content: `Could not find data for ${coin}. Please check the coin symbol and ensure it is typed correctly.`,
                     ephemeral: true
                 });
                 return;
@@ -59,7 +59,7 @@ module.exports = {
 
             if (!historicalData || historicalData.length === 0) {
                 await interaction.reply({
-                    content: `Could not fetch historical data for ${coin}. Please check the coin symbol and ensure it is typed in all lowercase.`,
+                    content: `Could not fetch historical data for ${coin}. Please check the coin symbol and ensure it is typed correctly.`,
                     ephemeral: true
                 });
                 return;
