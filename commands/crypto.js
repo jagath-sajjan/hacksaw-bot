@@ -18,11 +18,11 @@ module.exports = {
             description: 'The currency to display the price in',
             required: true,
             choices: [
-                { name: 'Indian Rupee', value: 'inr' },
+                { name: 'US Dollar', value: 'usd' },
                 { name: 'Euro', value: 'eur' },
                 { name: 'British Pound', value: 'gbp' },
                 { name: 'Japanese Yen', value: 'jpy' },
-                { name: 'US Dollar', value: 'usd' } 
+                { name: 'Indian Rupee', value: 'inr' }
             ]
         },
         {
@@ -51,7 +51,7 @@ module.exports = {
                 value: coin.id
             }));
 
-            const coinId = interaction.options.getString('coin');
+            const coinId = interaction.options.getString('coin').toLowerCase();
             const vsCurrency = interaction.options.getString('vs_currency');
             const days = interaction.options.getInteger('days');
 
@@ -61,6 +61,7 @@ module.exports = {
             });
 
             if (!coinData || !coinData.market_data || !coinData.market_data.current_price) {
+                console.error('Error fetching coin data:', coinData);
                 await interaction.reply({
                     content: `Could not find data for ${coinId}. Please check the coin name and try again.`,
                     ephemeral: true
@@ -78,6 +79,7 @@ module.exports = {
             });
 
             if (!historicalData || !historicalData.prices) {
+                console.error('Error fetching historical data:', historicalData);
                 await interaction.reply({
                     content: `Could not fetch historical data for ${coinId}. Please try again later.`,
                     ephemeral: true
